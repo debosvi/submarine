@@ -1,7 +1,11 @@
+# cmake stuffs
 CMakeCache.txt
 CMakeFiles
 CMakeScripts
-Makefile
 cmake_install.cmake
 install_manifest.txt
 CTestTestfile.cmake
+
+#project specific
+build/
+dl/

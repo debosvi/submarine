@@ -20,16 +20,32 @@ MPC_ARCHIVE=mpc-$MPC_VERSION.tar.gz
 ISL_ARCHIVE=isl-$ISL_VERSION.tar.gz
 NEWLIB_ARCHIVE=newlib-$NEWLIB_VERSION.tar.gz
 
+NB_CPU=`grep -c ^processor /proc/cpuinfo`
+export PARALLEL_BUILD_OPTS=-j$NB_CPU
+
 set -e
 
-BASEDIR=$PWD
+if [ "$SUBMARINE_PROJECT_DIR" == "" ]; then
+    echo -e "Must init project environment"
+    echo -e "Must set env SUBMARINE_PROJECT_DIR variable"
+    exit 1
+fi
+
+if [ "$SUBMARINE_SYSROOT_DIR" == "" ]; then
+    echo -e "Must set env SUBMARINE_SYSROOT_DIR variable"
+    exit 1
+fi
+
+if [ "$SUBMARINE_BUILD_DIR" == "" ]; then
+    echo -e "Must set env SUBMARINE_BUILD_DIR variable"
+    exit 1
+fi
+
+BASEDIR=$SUBMARINE_PROJECT_DIR
 DL_DIR=$BASEDIR/dl
-SRC_DIR=$BASEDIR/src
-TGT_DIR=$BASEDIR/target
-
-# MXE
-
-export PATH=$HOME/usr/bin:$PATH
+SRC_DIR=$SUBMARINE_BUILD_DIR/toolchains/src
+TGT_DIR=$SUBMARINE_BUILD_DIR/toolchains/target
+INSTALL_PREFIX=$SUBMARINE_SYSROOT_DIR
 
 # cd $BASEDIR
 # git clone https://github.com/mxe/mxe.git
@@ -81,11 +97,12 @@ cd $BASEDIR
 mkdir -p $TGT_DIR/$TARGET/binutils-$BINUTILS_VERSION
 cd $TGT_DIR/$TARGET/binutils-$BINUTILS_VERSION
 if [ ! -f .configure ]; then
-    $SRC_DIR/binutils-$BINUTILS_VERSION/configure --prefix=$HOME/usr --target=$TARGET --with-sysroot --enable-interwork --enable-multilib --disable-nls --disable-werror
+    $SRC_DIR/binutils-$BINUTILS_VERSION/configure --prefix=$INSTALL_PREFIX --target=$TARGET --with-sysroot --enable-interwork --enable-multilib --disable-nls --disable-werror || exit 1
     touch .configure
 fi
 if [ ! -f .install ]; then
-    make && make install
+    make $PARALLEL_BUILD_OPTS || exit 1 
+    make install || exit 1
     touch .install
 fi
 
@@ -95,11 +112,14 @@ cd $BASEDIR
 mkdir -p $TGT_DIR/$TARGET/gcc-$GCC_VERSION
 cd $TGT_DIR/$TARGET/gcc-$GCC_VERSION
 if [ ! -f .configure ]; then
-    $SRC_DIR/gcc-$GCC_VERSION/configure --prefix=$HOME/usr --target=$TARGET --enable-interwork --enable-multilib --disable-nls --enable-languages=c,c++ --without-headers
+    $SRC_DIR/gcc-$GCC_VERSION/configure --prefix=$INSTALL_PREFIX --target=$TARGET --enable-interwork --enable-multilib --disable-nls --enable-languages=c,c++ --without-headers || exit 1
     touch .configure
 fi
 if [ ! -f .install ]; then
-    make all-gcc && make all-target-libgcc && make install-gcc && make install-target-libgcc
+    make $PARALLEL_BUILD_OPTS all-gcc || exit 1
+    make $PARALLEL_BUILD_OPTS all-target-libgcc || exit 1
+    make install-gcc || exit 1
+    make install-target-libgcc || exit 1
     touch .install
 fi
 
@@ -108,11 +128,12 @@ cd $BASEDIR
 mkdir -p $TGT_DIR/$TARGET/newlib-$NEWLIB_VERSION
 cd $TGT_DIR/$TARGET/newlib-$NEWLIB_VERSION
 if [ ! -f .configure ]; then
-    $SRC_DIR/newlib-$NEWLIB_VERSION/configure --prefix=$HOME/usr --target=$TARGET --enable-interwork --enable-multilib --disable-nls
+    $SRC_DIR/newlib-$NEWLIB_VERSION/configure --prefix=$INSTALL_PREFIX --target=$TARGET --enable-interwork --enable-multilib --disable-nls || exit 1
     touch .configure
 fi
 if [ ! -f .install ]; then
-    make all && make install
+    make $PARALLEL_BUILD_OPTS all || exit 1
+    make install || exit 1
     touch .install
 fi
 
@@ -122,11 +143,12 @@ cd $BASEDIR
 mkdir -p $TGT_DIR/$TARGET/gdb-$GDB_VERSION
 cd $TGT_DIR/$TARGET/gdb-$GDB_VERSION
 if [ ! -f .configure ]; then
-    $SRC_DIR/gdb-$GDB_VERSION/configure --prefix=$HOME/usr --target=$TARGET --disable-nls --disable-werror
+    $SRC_DIR/gdb-$GDB_VERSION/configure --prefix=$INSTALL_PREFIX --target=$TARGET --disable-nls --disable-werror || exit 1
     touch .configure
 fi
 if [ ! -f .install ]; then
-    make && make install
+    make $PARALLEL_BUILD_OPTS || exit 1
+    make install || exit 1
     touch .install
 fi
 
