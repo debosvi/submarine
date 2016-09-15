@@ -1,0 +1,11 @@
+###############################################################################
+## Cross compiler and micro kernel with qemu
+http://wiki.osdev.org/Bare_Bones
+
+###############################################################################
+## aboriginal plus qemu sandbox
+http://www.hs-augsburg.de/~phuewe/automated_sandbox_testing_with_qemu_and_aboriginal.html
+
+###############################################################################
+## qemu with PIC32 machine managed
+https://github.com/sergev/qemu
