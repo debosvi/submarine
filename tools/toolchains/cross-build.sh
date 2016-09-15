@@ -62,9 +62,13 @@ function extract_archive {
 
 function download_archive {
     archive=`basename $1`
+    url=`echo $1 | sed -e "s/^\(.*\)\/.*$/\1/g"`
+    ver=`echo $1 | cut -d"-" -f2-`
     if [ ! -f $DL_DIR/$archive ]; then
         mkdir -p $DL_DIR
-        wget -c $1 -O $DL_DIR/$archive
+        wget --spider -q $1 &&
+			wget -c $1 -O $DL_DIR/$archive || 
+			wget -c $url/v$ver -O $DL_DIR/$archive || exit 1
     fi
     extract_archive $archive
 }
@@ -78,7 +82,7 @@ download_archive http://www.mpfr.org/mpfr-current/$MPFR_ARCHIVE
 download_archive http://ftp.gnu.org/gnu/gmp/$GMP_ARCHIVE
 download_archive http://ftp.gnu.org/gnu/mpc/$MPC_ARCHIVE
 download_archive http://isl.gforge.inria.fr/$ISL_ARCHIVE
-download_archive ftp://sourceware.org/pub/newlib/$NEWLIB_ARCHIVE
+download_archive https://github.com/openrisc/newlib/archive/$NEWLIB_ARCHIVE
 
 
 # Automatically download GMP, MPC and MPFR. These will be placed into the right directories.
@@ -90,19 +94,31 @@ ln -sfn $SRC_DIR/gmp-$GMP_VERSION gmp
 ln -sfn $SRC_DIR/mpc-$MPC_VERSION mpc
 ln -sfn $SRC_DIR/isl-$ISL_VERSION isl
 
+## for qemu i686
 TARGET=i686-elf
+## for qemu PIC32
+TARGET=mipsel-elf32
 
 # Binutils
 cd $BASEDIR
 mkdir -p $TGT_DIR/$TARGET/binutils-$BINUTILS_VERSION
 cd $TGT_DIR/$TARGET/binutils-$BINUTILS_VERSION
 if [ ! -f .configure ]; then
-    $SRC_DIR/binutils-$BINUTILS_VERSION/configure --prefix=$INSTALL_PREFIX --target=$TARGET --with-sysroot --enable-interwork --enable-multilib --disable-nls --disable-werror || exit 1
+    $SRC_DIR/binutils-$BINUTILS_VERSION/configure --prefix=$INSTALL_PREFIX --target=$TARGET --with-sysroot --enable-interwork --enable-multilib --disable-nls --disable-werror
+    if [ $? -eq 1 ]; then  
+		echo -e "Binutils configure failed!" && exit 1
+	fi
     touch .configure
 fi
 if [ ! -f .install ]; then
-    make $PARALLEL_BUILD_OPTS || exit 1 
-    make install || exit 1
+    make $PARALLEL_BUILD_OPTS
+    if [ $? -eq 1 ]; then  
+		echo -e "Binutils build failed!" && exit 1
+    fi
+    make install
+    if [ $? -eq 1 ]; then  
+		echo -e "Binutils install failed!" && exit 1
+	fi
     touch .install
 fi
 
@@ -112,14 +128,29 @@ cd $BASEDIR
 mkdir -p $TGT_DIR/$TARGET/gcc-$GCC_VERSION
 cd $TGT_DIR/$TARGET/gcc-$GCC_VERSION
 if [ ! -f .configure ]; then
-    $SRC_DIR/gcc-$GCC_VERSION/configure --prefix=$INSTALL_PREFIX --target=$TARGET --enable-interwork --enable-multilib --disable-nls --enable-languages=c,c++ --without-headers || exit 1
+    $SRC_DIR/gcc-$GCC_VERSION/configure --prefix=$INSTALL_PREFIX --target=$TARGET --enable-interwork --enable-multilib --disable-nls --enable-languages=c,c++ --without-headers
+    if [ $? -eq 1 ]; then  
+		echo -e "GCC configure failed!" && exit 1
+    fi
     touch .configure
 fi
 if [ ! -f .install ]; then
-    make $PARALLEL_BUILD_OPTS all-gcc || exit 1
-    make $PARALLEL_BUILD_OPTS all-target-libgcc || exit 1
-    make install-gcc || exit 1
-    make install-target-libgcc || exit 1
+    make $PARALLEL_BUILD_OPTS all-gcc
+    if [ $? -eq 1 ]; then  
+		echo -e "GCC build failed!" && exit 1
+    fi
+    make $PARALLEL_BUILD_OPTS all-target-libgcc
+    if [ $? -eq 1 ]; then  
+		echo -e "GCC libgcc build failed!" && exit 1
+    fi
+    make install-gcc
+    if [ $? -eq 1 ]; then  
+		echo -e "GCC install failed!" && exit 1
+    fi
+    make install-target-libgcc
+    if [ $? -eq 1 ]; then  
+		echo -e "GCC libgcc install failed!" && exit 1
+	fi
     touch .install
 fi
 
@@ -128,12 +159,21 @@ cd $BASEDIR
 mkdir -p $TGT_DIR/$TARGET/newlib-$NEWLIB_VERSION
 cd $TGT_DIR/$TARGET/newlib-$NEWLIB_VERSION
 if [ ! -f .configure ]; then
-    $SRC_DIR/newlib-$NEWLIB_VERSION/configure --prefix=$INSTALL_PREFIX --target=$TARGET --enable-interwork --enable-multilib --disable-nls || exit 1
+    $SRC_DIR/newlib-$NEWLIB_VERSION/configure --prefix=$INSTALL_PREFIX --target=$TARGET --enable-interwork --enable-multilib --disable-nls
+	if [ $? -eq 1 ]; then  
+		echo -e "newlib configure failed!" && exit 1
+    fi
     touch .configure
 fi
 if [ ! -f .install ]; then
-    make $PARALLEL_BUILD_OPTS all || exit 1
-    make install || exit 1
+    make $PARALLEL_BUILD_OPTS all
+	if [ $? -eq 1 ]; then  
+		echo -e "newlib build failed!" && exit 1
+    fi
+    make install
+	if [ $? -eq 1 ]; then  
+		echo -e "newlib install failed!" && exit 1
+    fi
     touch .install
 fi
 
@@ -143,12 +183,21 @@ cd $BASEDIR
 mkdir -p $TGT_DIR/$TARGET/gdb-$GDB_VERSION
 cd $TGT_DIR/$TARGET/gdb-$GDB_VERSION
 if [ ! -f .configure ]; then
-    $SRC_DIR/gdb-$GDB_VERSION/configure --prefix=$INSTALL_PREFIX --target=$TARGET --disable-nls --disable-werror || exit 1
+    $SRC_DIR/gdb-$GDB_VERSION/configure --prefix=$INSTALL_PREFIX --target=$TARGET --disable-nls --disable-werror
+	if [ $? -eq 1 ]; then  
+		echo -e "GDB configure failed!" && exit 1
+    fi
     touch .configure
 fi
 if [ ! -f .install ]; then
-    make $PARALLEL_BUILD_OPTS || exit 1
-    make install || exit 1
+    make $PARALLEL_BUILD_OPTS
+	if [ $? -eq 1 ]; then  
+		echo -e "GDB build failed!" && exit 1
+    fi
+    make install
+	if [ $? -eq 1 ]; then  
+		echo -e "GDB install failed!" && exit 1
+    fi
     touch .install
 fi
 
