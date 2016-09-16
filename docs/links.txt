@@ -9,3 +9,4 @@ http://www.hs-augsburg.de/~phuewe/automated_sandbox_testing_with_qemu_and_aborig
 ###############################################################################
 ## qemu with PIC32 machine managed
 https://github.com/sergev/qemu
+https://github.com/sergev/qemu/wiki
