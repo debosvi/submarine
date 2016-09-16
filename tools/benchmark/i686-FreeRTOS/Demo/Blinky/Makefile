@@ -23,6 +23,7 @@ BUILD           :=  $(BUILD_DIR)/$(PROJECT).elf
 TARGET          :=  $(BUILD_DIR)/$(PROJECT).iso
 GRUB_FILE       :=  $(BUILD_DIR)/grub.cfg
 MAP             :=  $(BUILD_DIR)/$(PROJECT).map
+
 LDS             :=  $(SOURCE_ROOT)/Source/portable/IA32_flat/elf_ia32_efi.lds
 
 find             =  $(filter-out $(SOURCE_EXCLUDE),$(wildcard $1/$2)) \
@@ -34,26 +35,31 @@ OBJECT          :=  $(patsubst $(SOURCE_ROOT)%,$(OBJECT_ROOT)%,$(patsubst %.c,%.
 
                     
 CROSS_PREFIX    ?=  i686-elf-
-LD              :=  $(CROSS_PREFIX)gcc
-LDFLAGS         :=  -nostdlib -Xlinker -T -Xlinker $(LDS) -Xlinker -Map=$(MAP) -Xlinker --gc-sections
-CC              :=  $(CROSS_PREFIX)gcc
-CFLAGS          :=  $(INCLUDE_DIR) -O0 -g3 -Wall -Wextra -c -fmessage-length=0 -march=pentium \
-                    -Wno-ignored-qualifiers -mno-ms-bitfields -ffunction-sections -ffreestanding
 AS              :=  $(CROSS_PREFIX)gcc
-SFLAGS          :=  $(INCLUDE_DIR) -Wa,--gdwarf2 -Wa,-march=pentium -c
+CC              :=  $(CROSS_PREFIX)gcc
+LD              :=  $(CROSS_PREFIX)gcc
 
-ISODIR_NAME      =  isodir
+# PERF_FLAGS      :=  -O0 -ggdb
+PERF_FLAGS      :=  -O2
+
+SFLAGS          :=  $(INCLUDE_DIR) -Wa,--gdwarf2 -Wa,-march=pentium -c
+CFLAGS          :=  $(INCLUDE_DIR) $(PERF_FLAGS) -Wall -Wextra -std=gnu99 -ffreestanding
+LDFLAGS         :=  -nostdlib -Xlinker -T -Xlinker $(LDS) -Xlinker -Map=$(MAP) -Xlinker --gc-sections
+LIBS            :=  -lgcc -lg
+
+
+ISODIR_NAME      =  $(BUILD_DIR)/isodir
 
 .PHONY: clean
 
 all: $(TARGET)
 
 $(BUILD): $(OBJECT)
-	$(LD) $(LDFLAGS) -o $(BUILD) $(OBJECT)
+	$(LD) -o $(BUILD) $(LDFLAGS) $(OBJECT) $(LIBS)
 
 $(OBJECT_ROOT)/%.o: $(SOURCE_ROOT)/%.c
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -o $@ $<
+	$(CC) $(CFLAGS) -o $@ -c $<
 
 $(OBJECT_ROOT)/%.o: $(SOURCE_ROOT)/%.S
 	@mkdir -p $(dir $@)
