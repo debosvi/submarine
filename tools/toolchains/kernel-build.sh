@@ -82,16 +82,24 @@ if [ ! -f .configure ]; then
     make $PARALLEL_BUILD_OPTS -C $SRC_DIR/$KERNEL_NAME O=$PWD oldconfig  || die "Unable to initiate kernel";
     touch .configure
 fi
-if [ ! -f .install ]; then
+if [ ! -f .build ]; then
     make $PARALLEL_BUILD_OPTS bzImage || die "Unable to build kernel image";
     make $PARALLEL_BUILD_OPTS modules || die "Unable to build kernel modules";
+    touch .build
+fi
+if [ ! -f .install ]; then
+    rm -rf $TGT_DIR/$TARGET/$KERNEL_NAME/rootfs || die "Unable to clean kernel rootfs";
+    
+    mkdir $TGT_DIR/$TARGET/$KERNEL_NAME/rootfs || die "Unable to create kernel rootfs base";
     make INSTALL_PATH=$TGT_DIR/$TARGET/$KERNEL_NAME/rootfs install || die "Unable to install kernel image";
     make INSTALL_MOD_PATH=$TGT_DIR/$TARGET/$KERNEL_NAME/rootfs modules_install || die "Unable to install kernel modules";
-    rm -rfv $RFS_DIR/lib/modules/$KERNEL_VERSION.0/{source,build} || die "Unable to clean build install modules tree";
+    rm -rfv $TGT_DIR/$TARGET/$KERNEL_NAME/rootfs/lib/modules/$KERNEL_VERSION.0/{source,build} || die "Unable to clean build install modules tree";
     touch .install
 fi
 if [ ! -f .archive ]; then
-    tar -C $TGT_DIR/$TARGET/$KERNEL_NAME/ -cjf $SUBMARINE_BUILD_DIR/kernel.tar.gz rootfs || die "Unable to archive kernel install tree";
+    archive=$SUBMARINE_BUILD_DIR/kernel.tar.gz
+    rm -rf $archive
+    tar -C $TGT_DIR/$TARGET/$KERNEL_NAME/ -cjf $archive rootfs || die "Unable to archive kernel install tree";
     touch .archive
 fi
 
