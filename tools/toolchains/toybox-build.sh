@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 # toybox-build.sh
 # v1.0
 TOYBOX_VERSION=0.7.1
@@ -6,7 +6,7 @@ TOYBOX_NAME=toybox-$TOYBOX_VERSION
 TOYBOX_ARCHIVE=$TOYBOX_NAME.tar.gz
 
 NB_CPU=`grep -c ^processor /proc/cpuinfo`
-# export PARALLEL_BUILD_OPTS=-j$NB_CPU
+export PARALLEL_BUILD_OPTS=-j$NB_CPU
 
 set -e
 

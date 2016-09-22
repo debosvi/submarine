@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 # busybox-build.sh
 # v1.0
 BUSYBOX_VERSION=1.25.0
@@ -6,7 +6,7 @@ BUSYBOX_NAME=busybox-$BUSYBOX_VERSION
 BUSYBOX_ARCHIVE=$BUSYBOX_NAME.tar.bz2
 
 NB_CPU=`grep -c ^processor /proc/cpuinfo`
-# export PARALLEL_BUILD_OPTS=-j$NB_CPU
+export PARALLEL_BUILD_OPTS=-j$NB_CPU
 
 set -e
 
