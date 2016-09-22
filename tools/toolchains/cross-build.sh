@@ -21,7 +21,8 @@ ISL_ARCHIVE=isl-$ISL_VERSION.tar.gz
 NEWLIB_ARCHIVE=newlib-$NEWLIB_VERSION.tar.gz
 
 NB_CPU=`grep -c ^processor /proc/cpuinfo`
-export PARALLEL_BUILD_OPTS=-j$NB_CPU
+#export PARALLEL_BUILD_OPTS=-j$NB_CPU
+export PARALLEL_BUILD_OPTS=-j2
 
 set -e
 
@@ -56,7 +57,8 @@ function extract_archive {
     dir=`echo $1  | sed -e "s/^\(.*\)\.tar.*$/\1/g"`
     if [ ! -d $SRC_DIR/$dir ]; then
         mkdir -p $SRC_DIR
-        tar -xvf $DL_DIR/$1 -C $SRC_DIR
+	echo -e "Extract $dir"
+        tar -xf $DL_DIR/$1 -C $SRC_DIR
     fi
 }
 
@@ -66,6 +68,7 @@ function download_archive {
     ver=`echo $1 | cut -d"-" -f2-`
     if [ ! -f $DL_DIR/$archive ]; then
         mkdir -p $DL_DIR
+	echo -e "Download $archive"
         wget --spider -q $1 &&
 			wget -c $1 -O $DL_DIR/$archive || 
 			wget -c $url/v$ver -O $DL_DIR/$archive || exit 1
@@ -93,11 +96,12 @@ ln -sfn $SRC_DIR/mpfr-$MPFR_VERSION mpfr
 ln -sfn $SRC_DIR/gmp-$GMP_VERSION gmp
 ln -sfn $SRC_DIR/mpc-$MPC_VERSION mpc
 ln -sfn $SRC_DIR/isl-$ISL_VERSION isl
+ln -sfn $SRC_DIR/newlib-$NEWLIB_VERSION newlib
 
 ## for qemu i686
 TARGET=i686-elf
 ## for qemu PIC32
-TARGET=mipsel-elf32
+# TARGET=mipsel-elf32
 
 # Binutils
 cd $BASEDIR
@@ -128,7 +132,7 @@ cd $BASEDIR
 mkdir -p $TGT_DIR/$TARGET/gcc-$GCC_VERSION
 cd $TGT_DIR/$TARGET/gcc-$GCC_VERSION
 if [ ! -f .configure ]; then
-    $SRC_DIR/gcc-$GCC_VERSION/configure --prefix=$INSTALL_PREFIX --target=$TARGET --enable-interwork --enable-multilib --disable-nls --enable-languages=c,c++ --without-headers
+    $SRC_DIR/gcc-$GCC_VERSION/configure --prefix=$INSTALL_PREFIX --target=$TARGET --enable-interwork --disable-multilib --disable-nls --enable-languages=c,c++ --without-headers
     if [ $? -eq 1 ]; then  
 		echo -e "GCC configure failed!" && exit 1
     fi
@@ -155,28 +159,28 @@ if [ ! -f .install ]; then
 fi
 
 # newlib
-cd $BASEDIR
-mkdir -p $TGT_DIR/$TARGET/newlib-$NEWLIB_VERSION
-cd $TGT_DIR/$TARGET/newlib-$NEWLIB_VERSION
-if [ ! -f .configure ]; then
-    $SRC_DIR/newlib-$NEWLIB_VERSION/configure --prefix=$INSTALL_PREFIX --target=$TARGET --enable-interwork --enable-multilib --disable-nls
-	if [ $? -eq 1 ]; then  
-		echo -e "newlib configure failed!" && exit 1
-    fi
-    touch .configure
-fi
-if [ ! -f .install ]; then
-    make $PARALLEL_BUILD_OPTS all
-	if [ $? -eq 1 ]; then  
-		echo -e "newlib build failed!" && exit 1
-    fi
-    make install
-	if [ $? -eq 1 ]; then  
-		echo -e "newlib install failed!" && exit 1
-    fi
-    touch .install
-fi
-
+#cd $BASEDIR
+#mkdir -p $TGT_DIR/$TARGET/newlib-$NEWLIB_VERSION
+#cd $TGT_DIR/$TARGET/newlib-$NEWLIB_VERSION
+#if [ ! -f .configure ]; then
+#    $SRC_DIR/newlib-$NEWLIB_VERSION/configure --prefix=$INSTALL_PREFIX --target=$TARGET --enable-interwork --enable-multilib --disable-nls
+#	if [ $? -eq 1 ]; then  
+#		echo -e "newlib configure failed!" && exit 1
+#    fi
+#    touch .configure
+#fi
+#if [ ! -f .install ]; then
+#    make $PARALLEL_BUILD_OPTS all
+#	if [ $? -eq 1 ]; then  
+#		echo -e "newlib build failed!" && exit 1
+#    fi
+#    make install
+#	if [ $? -eq 1 ]; then  
+#		echo -e "newlib install failed!" && exit 1
+#    fi
+#    touch .install
+#fi
+#
 
 # GDB
 cd $BASEDIR
