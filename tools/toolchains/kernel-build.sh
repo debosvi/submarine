@@ -66,40 +66,38 @@ function download_archive {
 
 download_archive https://www.kernel.org/pub/linux/kernel/v4.x/$KERNEL_ARCHIVE
 
-## for qemu i686
-ARCH=i686
-TARGET=i686-pc-linux
-## for qemu PIC32
-# TARGET=mipsel-elf32
+## default i686
+CROSS_TARGET=${CROSS_TARGET:-i686}
+CROSS_COMPILE=$CROSS_TARGET-
 
 # kernel
 cd $BASEDIR
-mkdir -p $TGT_DIR/$TARGET/$KERNEL_NAME/{build,rootfs}
+mkdir -p $TGT_DIR/$CROSS_TARGET/$KERNEL_NAME/{build,rootfs}
 
-cd $TGT_DIR/$TARGET/$KERNEL_NAME/build
+cd $TGT_DIR/$CROSS_TARGET/$KERNEL_NAME/build
 if [ ! -f .configure ]; then
     cp -av $BASEDIR/configs/kernel.config $PWD/.config || die "Unable to place default config";
-    make $PARALLEL_BUILD_OPTS -C $SRC_DIR/$KERNEL_NAME O=$PWD oldconfig  || die "Unable to initiate kernel";
+    make CROSS_COMPILE=$CROSS_COMPILE $PARALLEL_BUILD_OPTS -C $SRC_DIR/$KERNEL_NAME O=$PWD oldconfig  || die "Unable to initiate kernel";
     touch .configure
 fi
 if [ ! -f .build ]; then
-    make $PARALLEL_BUILD_OPTS bzImage || die "Unable to build kernel image";
-    make $PARALLEL_BUILD_OPTS modules || die "Unable to build kernel modules";
+    make CROSS_COMPILE=$CROSS_COMPILE $PARALLEL_BUILD_OPTS bzImage || die "Unable to build kernel image";
+    make CROSS_COMPILE=$CROSS_COMPILE $PARALLEL_BUILD_OPTS modules || die "Unable to build kernel modules";
     touch .build
 fi
 if [ ! -f .install ]; then
-    rm -rf $TGT_DIR/$TARGET/$KERNEL_NAME/rootfs || die "Unable to clean kernel rootfs";
+    rm -rf $TGT_DIR/$CROSS_TARGET/$KERNEL_NAME/rootfs || die "Unable to clean kernel rootfs";
     
-    mkdir $TGT_DIR/$TARGET/$KERNEL_NAME/rootfs || die "Unable to create kernel rootfs base";
-    make INSTALL_PATH=$TGT_DIR/$TARGET/$KERNEL_NAME/rootfs install || die "Unable to install kernel image";
-    make INSTALL_MOD_PATH=$TGT_DIR/$TARGET/$KERNEL_NAME/rootfs modules_install || die "Unable to install kernel modules";
-    rm -rfv $TGT_DIR/$TARGET/$KERNEL_NAME/rootfs/lib/modules/$KERNEL_VERSION.0/{source,build} || die "Unable to clean build install modules tree";
+    mkdir $TGT_DIR/$CROSS_TARGET/$KERNEL_NAME/rootfs || die "Unable to create kernel rootfs base";
+    make CROSS_COMPILE=$CROSS_COMPILE INSTALL_PATH=$TGT_DIR/$CROSS_TARGET/$KERNEL_NAME/rootfs install || die "Unable to install kernel image";
+    make CROSS_COMPILE=$CROSS_COMPILE INSTALL_MOD_PATH=$TGT_DIR/$CROSS_TARGET/$KERNEL_NAME/rootfs modules_install || die "Unable to install kernel modules";
+    rm -rfv $TGT_DIR/$CROSS_TARGET/$KERNEL_NAME/rootfs/lib/modules/$KERNEL_VERSION.0/{source,build} || die "Unable to clean build install modules tree";
     touch .install
 fi
 if [ ! -f .archive ]; then
     archive=$SUBMARINE_BUILD_DIR/kernel.tar.gz
     rm -rf $archive
-    tar -C $TGT_DIR/$TARGET/$KERNEL_NAME/ -cjf $archive rootfs || die "Unable to archive kernel install tree";
+    tar -C $TGT_DIR/$CROSS_TARGET/$KERNEL_NAME/ -cjf $archive rootfs || die "Unable to archive kernel install tree";
     touch .archive
 fi
 

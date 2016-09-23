@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 # cross-build.sh
 # v1.0
 

@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/bash -x
 # busybox-build.sh
 # v1.0
-BUSYBOX_VERSION=1.25.0
+BUSYBOX_VERSION=1.24.1
 BUSYBOX_NAME=busybox-$BUSYBOX_VERSION
 BUSYBOX_ARCHIVE=$BUSYBOX_NAME.tar.bz2
 
@@ -65,37 +65,35 @@ function download_archive {
 
 download_archive https://busybox.net/downloads/$BUSYBOX_ARCHIVE
 
-## for qemu i686
-ARCH=i686
-TARGET=i686-pc-linux
-## for qemu PIC32
-# TARGET=mipsel-elf32
+## default i686
+CROSS_TARGET=${CROSS_TARGET:-i686}
+CROSS_COMPILE=$CROSS_TARGET-
 
 # busybox
 cd $BASEDIR
-mkdir -p $TGT_DIR/$TARGET/$BUSYBOX_NAME/{build,rootfs}
+mkdir -p $TGT_DIR/$CROSS_TARGET/$BUSYBOX_NAME/{build,rootfs}
 
-cd $TGT_DIR/$TARGET/$BUSYBOX_NAME/build
+cd $TGT_DIR/$CROSS_TARGET/$BUSYBOX_NAME/build
 if [ ! -f .configure ]; then
     cp -av $BASEDIR/configs/busybox.config $PWD/.config || die "Unable to place default config";
-    make $PARALLEL_BUILD_OPTS -C $SRC_DIR/$BUSYBOX_NAME O=$PWD oldconfig  || die "Unable to initiate busybox";
+    make CROSS_COMPILE=$CROSS_COMPILE $PARALLEL_BUILD_OPTS -C $SRC_DIR/$BUSYBOX_NAME O=$PWD oldconfig  || die "Unable to initiate busybox";
     touch .configure
 fi
 if [ ! -f .build ]; then
-    make $PARALLEL_BUILD_OPTS || die "Unable to build busybox image";
+    make CROSS_COMPILE=$CROSS_COMPILE  || die "Unable to build busybox image";
     touch .build
 fi
 if [ ! -f .install ]; then
-    rm -rf $TGT_DIR/$TARGET/$BUSYBOX_NAME/rootfs || die "Unable to clean busybox rootfs";
+    rm -rf $TGT_DIR/$CROSS_TARGET/$BUSYBOX_NAME/rootfs || die "Unable to clean busybox rootfs";
     
-    mkdir $TGT_DIR/$TARGET/$BUSYBOX_NAME/rootfs || die "Unable to create busybox rootfs base";
-    make CONFIG_PREFIX=$TGT_DIR/$TARGET/$BUSYBOX_NAME/rootfs install || die "Unable to install busybox image";
+    mkdir $TGT_DIR/$CROSS_TARGET/$BUSYBOX_NAME/rootfs || die "Unable to create busybox rootfs base";
+    make CROSS_COMPILE=$CROSS_COMPILE CONFIG_PREFIX=$TGT_DIR/$CROSS_TARGET/$BUSYBOX_NAME/rootfs install || die "Unable to install busybox image";
     touch .install
 fi
 if [ ! -f .archive ]; then
     archive=$SUBMARINE_BUILD_DIR/busybox.tar.gz
     rm -rf $archive
-    tar -C $TGT_DIR/$TARGET/$BUSYBOX_NAME/ -cjf $archive rootfs || die "Unable to archive busybox install tree";
+    tar -C $TGT_DIR/$CROSS_TARGET/$BUSYBOX_NAME/ -cjf $archive rootfs || die "Unable to archive busybox install tree";
     touch .archive
 fi
 
