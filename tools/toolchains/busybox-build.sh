@@ -1,12 +1,15 @@
-#!/bin/bash
+#!/bin/bash -x
 # busybox-build.sh
 # v1.0
 BUSYBOX_VERSION=1.25.0
 BUSYBOX_NAME=busybox-$BUSYBOX_VERSION
 BUSYBOX_ARCHIVE=$BUSYBOX_NAME.tar.bz2
 
-NB_CPU=`grep -c ^processor /proc/cpuinfo`
-export PARALLEL_BUILD_OPTS=-j$NB_CPU
+if [ -z $NB_CPUS ]; then 
+	NB_CPUS=`grep -c ^processor /proc/cpuinfo`
+fi
+
+export PARALLEL_BUILD_OPTS=-j$NB_CPUS
 
 set -e
 
@@ -65,11 +68,9 @@ function download_archive {
 
 download_archive https://busybox.net/downloads/$BUSYBOX_ARCHIVE
 
-## for qemu i686
-ARCH=i686
-TARGET=i686-pc-linux
-## for qemu PIC32
-# TARGET=mipsel-elf32
+## default i686
+CROSS_TARGET=${TARGET:-i686}
+CROSS_COMPILE=$CROSS_TARGET-
 
 # busybox
 cd $BASEDIR
@@ -78,13 +79,15 @@ mkdir -p $TGT_DIR/$TARGET/$BUSYBOX_NAME/{build,rootfs}
 cd $TGT_DIR/$TARGET/$BUSYBOX_NAME/build
 if [ ! -f .configure ]; then
     cp -av $BASEDIR/configs/busybox.config $PWD/.config || die "Unable to place default config";
-    make $PARALLEL_BUILD_OPTS -C $SRC_DIR/$BUSYBOX_NAME O=$PWD oldconfig  || die "Unable to initiate busybox";
+    make ARCH=i586 CROSS_COMPILE=$CROSS_COMPILE $PARALLEL_BUILD_OPTS -C $SRC_DIR/$BUSYBOX_NAME O=$PWD oldconfig  || die "Unable to initiate busybox";
     touch .configure
 fi
+
 if [ ! -f .build ]; then
-    make $PARALLEL_BUILD_OPTS || die "Unable to build busybox image";
+    make ARCH=i586 CROSS_COMPILE=$CROSS_COMPILE $PARALLEL_BUILD_OPTS || die "Unable to build busybox image";
     touch .build
 fi
+
 if [ ! -f .install ]; then
     rm -rf $TGT_DIR/$TARGET/$BUSYBOX_NAME/rootfs || die "Unable to clean busybox rootfs";
     
@@ -92,6 +95,7 @@ if [ ! -f .install ]; then
     make CONFIG_PREFIX=$TGT_DIR/$TARGET/$BUSYBOX_NAME/rootfs install || die "Unable to install busybox image";
     touch .install
 fi
+
 if [ ! -f .archive ]; then
     archive=$SUBMARINE_BUILD_DIR/busybox.tar.gz
     rm -rf $archive

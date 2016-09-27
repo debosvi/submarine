@@ -10,3 +10,7 @@ http://www.hs-augsburg.de/~phuewe/automated_sandbox_testing_with_qemu_and_aborig
 ## qemu with PIC32 machine managed
 https://github.com/sergev/qemu
 https://github.com/sergev/qemu/wiki
+
+###############################################################################
+## yocto i586 toolchain
+http://downloads.yoctoproject.org/releases/yocto/yocto-2.1.1/toolchain/i686/poky-glibc-i686-core-image-sato-i586-toolchain-2.1.1.sh

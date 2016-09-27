@@ -1,6 +1,9 @@
-#!/bin/bash
-# i686-elf-tools.sh
+#!/bin/bash -x
+# cross-build.sh
 # v1.0
+
+. `dirname $0`/basic-build.sh
+
 
 BINUTILS_VERSION=2.27
 GCC_VERSION=6.2.0
@@ -20,61 +23,6 @@ MPC_ARCHIVE=mpc-$MPC_VERSION.tar.gz
 ISL_ARCHIVE=isl-$ISL_VERSION.tar.gz
 NEWLIB_ARCHIVE=newlib-$NEWLIB_VERSION.tar.gz
 
-NB_CPU=`grep -c ^processor /proc/cpuinfo`
-#export PARALLEL_BUILD_OPTS=-j$NB_CPU
-export PARALLEL_BUILD_OPTS=-j2
-
-set -e
-
-if [ "$SUBMARINE_PROJECT_DIR" == "" ]; then
-    echo -e "Must init project environment"
-    echo -e "Must set env SUBMARINE_PROJECT_DIR variable"
-    exit 1
-fi
-
-if [ "$SUBMARINE_SYSROOT_DIR" == "" ]; then
-    echo -e "Must set env SUBMARINE_SYSROOT_DIR variable"
-    exit 1
-fi
-
-if [ "$SUBMARINE_BUILD_DIR" == "" ]; then
-    echo -e "Must set env SUBMARINE_BUILD_DIR variable"
-    exit 1
-fi
-
-BASEDIR=$SUBMARINE_PROJECT_DIR
-DL_DIR=$BASEDIR/dl
-SRC_DIR=$SUBMARINE_BUILD_DIR/toolchains/src
-TGT_DIR=$SUBMARINE_BUILD_DIR/toolchains/target
-INSTALL_PREFIX=$SUBMARINE_SYSROOT_DIR
-
-# cd $BASEDIR
-# git clone https://github.com/mxe/mxe.git
-# cd mxe
-# make gcc
-
-function extract_archive {
-    dir=`echo $1  | sed -e "s/^\(.*\)\.tar.*$/\1/g"`
-    if [ ! -d $SRC_DIR/$dir ]; then
-        mkdir -p $SRC_DIR
-	echo -e "Extract $dir"
-        tar -xf $DL_DIR/$1 -C $SRC_DIR
-    fi
-}
-
-function download_archive {
-    archive=`basename $1`
-    url=`echo $1 | sed -e "s/^\(.*\)\/.*$/\1/g"`
-    ver=`echo $1 | cut -d"-" -f2-`
-    if [ ! -f $DL_DIR/$archive ]; then
-        mkdir -p $DL_DIR
-	echo -e "Download $archive"
-        wget --spider -q $1 &&
-			wget -c $1 -O $DL_DIR/$archive || 
-			wget -c $url/v$ver -O $DL_DIR/$archive || exit 1
-    fi
-    extract_archive $archive
-}
 
 # Downloads
 
@@ -98,17 +46,14 @@ ln -sfn $SRC_DIR/mpc-$MPC_VERSION mpc
 ln -sfn $SRC_DIR/isl-$ISL_VERSION isl
 ln -sfn $SRC_DIR/newlib-$NEWLIB_VERSION newlib
 
-## for qemu i686
-TARGET=i686-elf
-## for qemu PIC32
-# TARGET=mipsel-elf32
+
 
 # Binutils
 cd $BASEDIR
-mkdir -p $TGT_DIR/$TARGET/binutils-$BINUTILS_VERSION
-cd $TGT_DIR/$TARGET/binutils-$BINUTILS_VERSION
+mkdir -p $TGT_DIR/$CROSS_TARGET/binutils-$BINUTILS_VERSION
+cd $TGT_DIR/$CROSS_TARGET/binutils-$BINUTILS_VERSION
 if [ ! -f .configure ]; then
-    $SRC_DIR/binutils-$BINUTILS_VERSION/configure --prefix=$INSTALL_PREFIX --target=$TARGET --with-sysroot --enable-interwork --enable-multilib --disable-nls --disable-werror
+    $SRC_DIR/binutils-$BINUTILS_VERSION/configure --prefix=$INSTALL_PREFIX --target=$CROSS_TARGET --with-sysroot --disable-multilib --disable-nls --disable-shared --disable-werror
     if [ $? -eq 1 ]; then  
 		echo -e "Binutils configure failed!" && exit 1
 	fi
@@ -129,10 +74,14 @@ fi
 
 # GCC
 cd $BASEDIR
-mkdir -p $TGT_DIR/$TARGET/gcc-$GCC_VERSION
-cd $TGT_DIR/$TARGET/gcc-$GCC_VERSION
+mkdir -p $TGT_DIR/$CROSS_TARGET/gcc-$GCC_VERSION
+cd $TGT_DIR/$CROSS_TARGET/gcc-$GCC_VERSION
 if [ ! -f .configure ]; then
-    $SRC_DIR/gcc-$GCC_VERSION/configure --prefix=$INSTALL_PREFIX --target=$TARGET --enable-interwork --disable-multilib --disable-nls --enable-languages=c,c++ --without-headers
+    $SRC_DIR/gcc-$GCC_VERSION/configure --prefix=$INSTALL_PREFIX --target=$CROSS_TARGET \
+		--enable-32bit --disable-64bit --enable-languages="c,c++" \
+		--disable-multilib --disable-libssp --enable-threads=posix --disable-nls -disable-shared \
+		--enable-checking=release --enable-lto --enable-version-specific-runtime-libs --without-headers
+		
     if [ $? -eq 1 ]; then  
 		echo -e "GCC configure failed!" && exit 1
     fi
@@ -160,10 +109,10 @@ fi
 
 # newlib
 #cd $BASEDIR
-#mkdir -p $TGT_DIR/$TARGET/newlib-$NEWLIB_VERSION
-#cd $TGT_DIR/$TARGET/newlib-$NEWLIB_VERSION
+#mkdir -p $TGT_DIR/$CROSS_TARGET/newlib-$NEWLIB_VERSION
+#cd $TGT_DIR/$CROSS_TARGET/newlib-$NEWLIB_VERSION
 #if [ ! -f .configure ]; then
-#    $SRC_DIR/newlib-$NEWLIB_VERSION/configure --prefix=$INSTALL_PREFIX --target=$TARGET --enable-interwork --enable-multilib --disable-nls
+#    $SRC_DIR/newlib-$NEWLIB_VERSION/configure --prefix=$INSTALL_PREFIX --target=$CROSS_TARGET --enable-interwork --enable-multilib --disable-nls
 #	if [ $? -eq 1 ]; then  
 #		echo -e "newlib configure failed!" && exit 1
 #    fi
@@ -184,10 +133,10 @@ fi
 
 # GDB
 cd $BASEDIR
-mkdir -p $TGT_DIR/$TARGET/gdb-$GDB_VERSION
-cd $TGT_DIR/$TARGET/gdb-$GDB_VERSION
+mkdir -p $TGT_DIR/$CROSS_TARGET/gdb-$GDB_VERSION
+cd $TGT_DIR/$CROSS_TARGET/gdb-$GDB_VERSION
 if [ ! -f .configure ]; then
-    $SRC_DIR/gdb-$GDB_VERSION/configure --prefix=$INSTALL_PREFIX --target=$TARGET --disable-nls --disable-werror
+    $SRC_DIR/gdb-$GDB_VERSION/configure --prefix=$INSTALL_PREFIX --target=$CROSS_TARGET --disable-nls --disable-werror
 	if [ $? -eq 1 ]; then  
 		echo -e "GDB configure failed!" && exit 1
     fi
