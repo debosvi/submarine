@@ -9,3 +9,6 @@ CTestTestfile.cmake
 #project specific
 build/
 dl/
+
+# temp file
+*~

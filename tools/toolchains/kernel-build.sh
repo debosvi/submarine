@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 # kernel-build.sh
 # v1.0
 
@@ -10,7 +10,6 @@ KERNEL_NAME=linux-$KERNEL_VERSION
 
 
 # Downloads
-
 download_archive https://www.kernel.org/pub/linux/kernel/$KERNEL_BRANCH $KERNEL_NAME
 
 # kernel

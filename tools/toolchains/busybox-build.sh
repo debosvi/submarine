@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 # busybox-build.sh
 # v1.0
 

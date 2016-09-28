@@ -2,7 +2,6 @@
 # basic-build.sh
 # v1.0
 
-
 if [ -z $NB_CPUS ]; then 
 	NB_CPUS=`grep -c ^processor /proc/cpuinfo`
 fi
@@ -27,7 +26,6 @@ if [ "$SUBMARINE_BUILD_DIR" == "" ]; then
     exit 1
 fi
 
-
 ## default i686
 CROSS_ARCH=${ARCH:-i686}
 CROSS_TARGET=${TARGET:-i686}
@@ -39,7 +37,10 @@ DL_DIR=$BASEDIR/dl
 SRC_DIR=$SUBMARINE_BUILD_DIR/toolchains/src
 TGT_DIR=$SUBMARINE_BUILD_DIR/toolchains/target
 RFS_DIR=$SUBMARINE_BUILD_DIR/rootfs
+IMG_DIR=$SUBMARINE_BUILD_DIR/images
 INSTALL_PREFIX=$SUBMARINE_SYSROOT_DIR
+
+ROOTFS_INITRD=rootfs.cpio
 
 function die {
     echo -e $1
@@ -80,8 +81,9 @@ function download_archive {
             mkdir -p $DL_DIR
             echo -e "Download $archive"
             wget -c $url/$archive -O $DL_DIR/$archive || die "Unable to download $archive"
+            echo $archive > $DL_DIR/.dl_$name
         fi
-        echo $archive > $DL_DIR/.dl_$name
+        
     else
         archive=$(cat $DL_DIR/.dl_$name)
     fi

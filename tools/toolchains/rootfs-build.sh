@@ -2,56 +2,34 @@
 # rootfs-build.sh
 # v1.0
 
+. `dirname $0`/basic-build.sh
+
 KERNEL_ARCHIVE=kernel.tar.gz
 BUSYBOX_ARCHIVE=busybox.tar.gz
 TOYBOX_ARCHIVE=toybox.tar.gz
 
-NB_CPU=`grep -c ^processor /proc/cpuinfo`
-export PARALLEL_BUILD_OPTS=-j$NB_CPU
-
-set -e
-
-if [ "$SUBMARINE_PROJECT_DIR" == "" ]; then
-    echo -e "Must init project environment"
-    echo -e "Must set env SUBMARINE_PROJECT_DIR variable"
-    exit 1
-fi
-
-if [ "$SUBMARINE_SYSROOT_DIR" == "" ]; then
-    echo -e "Must set env SUBMARINE_SYSROOT_DIR variable"
-    exit 1
-fi
-
-if [ "$SUBMARINE_BUILD_DIR" == "" ]; then
-    echo -e "Must set env SUBMARINE_BUILD_DIR variable"
-    exit 1
-fi
-
-BASEDIR=$SUBMARINE_PROJECT_DIR
-DL_DIR=$BASEDIR/dl
-RFS_DIR=$SUBMARINE_BUILD_DIR/rootfs
-IMG_DIR=$SUBMARINE_BUILD_DIR/images
-SRC_DIR=$SUBMARINE_BUILD_DIR/toolchains/src
-TGT_DIR=$SUBMARINE_BUILD_DIR/toolchains/target
-INSTALL_PREFIX=$SUBMARINE_SYSROOT_DIR
-
-function die {
-	echo -e $1
-	exit 1
-}
-
 # rootfs
 cd $BASEDIR
 
+# prepare output dirs
 mkdir -p $IMG_DIR || die "Unable to create images dir";
-
 rm -rf $RFS_DIR
 mkdir -p $RFS_DIR || die "Unable to create rootfs dir";
 
+# get cross compiler
+$(dirname $0)/cross-build.sh
+
+# build components
+$(dirname $0)/busybox-build.sh
+$(dirname $0)/toybox-build.sh
+$(dirname $0)/kernel-build.sh
+
 cd $RFS_DIR
 
+# copy skeleton with tar
 tar --exclude=.empty -C $BASEDIR/configs/rootfs/ -cpf - . | tar -C $RFS_DIR -xf -
 
+# extract built archives rootfs (busybox, toybox, kernel)
 if [ -f $SUBMARINE_BUILD_DIR/$KERNEL_ARCHIVE ]; then
     tar -xf $SUBMARINE_BUILD_DIR/$KERNEL_ARCHIVE --strip-components=1 rootfs/lib || die "Unable to extract kernel modules";
     IMG=$(tar -tf $SUBMARINE_BUILD_DIR/$KERNEL_ARCHIVE | grep vmlinuz | xargs basename)
@@ -67,4 +45,11 @@ if [ -f $SUBMARINE_BUILD_DIR/$TOYBOX_ARCHIVE ]; then
     tar -xf $SUBMARINE_BUILD_DIR/$TOYBOX_ARCHIVE --strip-components=1 || die "Unable to extract toybox built archive";
 fi
 
-mksquashfs $RFS_DIR $IMG_DIR/hda.sqf -noappend -always-use-fragments
+# create initramfs
+cd $RFS_DIR
+find . | cpio --create --'format=newc' | gzip  > $IMG_DIR/$ROOTFS_INITRD.gz
+
+# mksquashfs $RFS_DIR $IMG_DIR/hda.sqf -noappend -always-use-fragments
+
+
+
