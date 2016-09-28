@@ -7,6 +7,7 @@
 KERNEL_ARCHIVE=kernel.tar.gz
 BUSYBOX_ARCHIVE=busybox.tar.gz
 TOYBOX_ARCHIVE=toybox.tar.gz
+CANUTILS_ARCHIVE=can-utils.tar.gz
 
 # rootfs
 cd $BASEDIR
@@ -23,11 +24,16 @@ $(dirname $0)/cross-build.sh
 $(dirname $0)/busybox-build.sh
 $(dirname $0)/toybox-build.sh
 $(dirname $0)/kernel-build.sh
+$(dirname $0)/canutils-build.sh
 
 cd $RFS_DIR
 
 # copy skeleton with tar
 tar --exclude=.empty -C $BASEDIR/configs/rootfs/ -cpf - . | tar -C $RFS_DIR -xf -
+mkdir -p $RFS_DIR/lib
+cp -av $SUBMARINE_SYSROOT_DIR/lib/ld-musl.so.0 $RFS_DIR/lib
+cp -av $SUBMARINE_SYSROOT_DIR/lib/libc.so $RFS_DIR/lib
+cp -av $SUBMARINE_SYSROOT_DIR/lib/libgcc_s.so.1 $RFS_DIR/lib
 
 # extract built archives rootfs (busybox, toybox, kernel)
 if [ -f $SUBMARINE_BUILD_DIR/$KERNEL_ARCHIVE ]; then
@@ -43,6 +49,10 @@ fi
 
 if [ -f $SUBMARINE_BUILD_DIR/$TOYBOX_ARCHIVE ]; then
     tar -xf $SUBMARINE_BUILD_DIR/$TOYBOX_ARCHIVE --strip-components=1 || die "Unable to extract toybox built archive";
+fi
+
+if [ -f $SUBMARINE_BUILD_DIR/$CANUTILS_ARCHIVE ]; then
+    tar -xf $SUBMARINE_BUILD_DIR/$CANUTILS_ARCHIVE --strip-components=1 || die "Unable to extract can-utils built archive";
 fi
 
 # create initramfs

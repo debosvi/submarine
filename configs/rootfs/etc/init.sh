@@ -50,6 +50,11 @@ then
 
   [ -z "$HANDOFF" ] && echo Type exit when done. && HANDOFF=/bin/hush
   [ -z "$CONSOLE" ] && CONSOLE=console
+  
+  modprobe vcan
+  ip link add type vcan
+  ip link set vcan0 up
+  
   exec /sbin/oneit -c /dev/"$CONSOLE" "$HANDOFF"
 
 # If we're not PID 1, it's probably a chroot.

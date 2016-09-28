@@ -9,5 +9,6 @@ COMPILER_NAME=cross-compiler-$CROSS_ARCH
 # Downloads
 download_archive http://landley.net/aboriginal/downloads/binaries $COMPILER_NAME
 
-rm -f $SUBMARINE_SYSROOT_DIR
+echo -e "Extract toolchain"
+rm -rf $SUBMARINE_SYSROOT_DIR
 ln -sfn $SRC_DIR/$COMPILER_NAME $SUBMARINE_SYSROOT_DIR

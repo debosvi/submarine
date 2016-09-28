@@ -36,7 +36,8 @@ BASEDIR=$SUBMARINE_PROJECT_DIR
 DL_DIR=$BASEDIR/dl
 SRC_DIR=$SUBMARINE_BUILD_DIR/toolchains/src
 TGT_DIR=$SUBMARINE_BUILD_DIR/toolchains/target
-RFS_DIR=$SUBMARINE_BUILD_DIR/rootfs
+RFS_DIR=$SUBMARINE_BUILD_DIR/ramfs
+HDA_DIR=$SUBMARINE_BUILD_DIR/rootfs
 IMG_DIR=$SUBMARINE_BUILD_DIR/images
 INSTALL_PREFIX=$SUBMARINE_SYSROOT_DIR
 
@@ -48,11 +49,17 @@ function die {
 }
 
 function extract_archive {
-    dir=`echo $1  | sed -e "s/^\(.*\)\.tar.*$/\1/g"`
-    if [ ! -d $SRC_DIR/$dir ]; then
+    name=$1
+    archive=`cat $DL_DIR/.dl_$name`
+    ext=`echo $archive | cut -d. -f2-`
+    if [ ! -d $SRC_DIR/$name ]; then
         mkdir -p $SRC_DIR
-        echo -e "Extract $dir"
-        tar -xf $DL_DIR/$1 -C $SRC_DIR
+        echo -e "Extract $name"
+        if [ "$ext" == "zip" ]; then
+            unzip -o $DL_DIR/$archive -d $SRC_DIR
+        else
+            tar -xf $DL_DIR/$archive -C $SRC_DIR
+        fi
     fi
 }
 
@@ -61,32 +68,42 @@ function download_archive {
     name=$2
     ver=`echo $name | cut -d"-" -f2-`
     archive=
+    output=
     
     if [ ! -f $DL_DIR/.dl_$name ]; then
         if wget --spider -q $url/$name.tar.xz; then
             archive=$name.tar.xz
+            output=$name.tar.xz
         elif wget --spider -q $url/v$ver.tar.xz; then
             archive=v$ver.tar.xz
+            output=$name.tar.xz
         elif wget --spider -q $url/$name.tar.bz2; then
             archive=$name.tar.bz2
+            output=$name.tar.bz2
         elif wget --spider -q $url/v$ver.tar.bz2; then
             archive=v$ver.tar.bz2
+            output=$name.tar.bz2
         elif wget --spider -q $url/$name.tar.gz; then
             archive=$name.tar.gz
+            output=$name.tar.gz
         elif wget --spider -q $url/v$ver.tar.gz; then
             archive=v$ver.tar.gz
+            output=$name.tar.gz
+        elif wget --spider -q $url/master.zip; then
+            archive=master.zip
+            output=$name.zip
         fi
         
         if [ $archive ]; then
             mkdir -p $DL_DIR
             echo -e "Download $archive"
-            wget -c $url/$archive -O $DL_DIR/$archive || die "Unable to download $archive"
-            echo $archive > $DL_DIR/.dl_$name
+            wget -c $url/$archive -O $DL_DIR/$output || die "Unable to download $archive"
+            echo $output > $DL_DIR/.dl_$name
         fi
         
     else
         archive=$(cat $DL_DIR/.dl_$name)
     fi
         
-    extract_archive $archive
+    extract_archive $name
 }
