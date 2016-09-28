@@ -81,7 +81,9 @@ function download_archive {
             echo -e "Download $archive"
             wget -c $url/$archive -O $DL_DIR/$archive || die "Unable to download $archive"
         fi
-        touch $DL_DIR/.dl_$name
+        echo $archive > $DL_DIR/.dl_$name
+    else
+        archive=$(cat $DL_DIR/.dl_$name)
     fi
         
     extract_archive $archive
