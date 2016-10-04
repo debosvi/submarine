@@ -9,8 +9,7 @@ class QActionGroup;
 class QLabel;
 class QMenu;
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
