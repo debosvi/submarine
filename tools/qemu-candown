@@ -1,0 +1,9 @@
+#!/bin/bash 
+
+. `dirname $0`/toolchains/basic-build.sh
+
+MODULE=${MODULE:-vcan}
+IFACE=${IFACE:-${MODULE}0}
+
+sudo modprobe -r $MODULE || die "Unable to down '$IFACE' interface"
+

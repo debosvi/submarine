@@ -1,0 +1,30 @@
+#!/bin/bash 
+
+. `dirname $0`/toolchains/basic-build.sh
+
+MODULE=${MODULE:-vcan}
+IFACE=${IFACE:-${MODULE}0}
+
+checkModule() {
+    MOD=$1
+    awk '{ print $1 }' /proc/modules | grep $MOD
+    ISLOADED=$?
+    if [ $ISLOADED -eq 0 ]; then
+        echo "Module $MOD is loaded"
+        return 0
+    else
+        echo "Module $MOD is not loaded!"
+        return 1
+    fi
+}
+
+checkModule $MODULE
+if [ $? -eq 1 ]; then
+    sudo modprobe $MODULE || die "Unable to load '$MODULE' module"
+fi
+
+if [ ! -f /sys/class/net/$IFACE ]; then
+    sudo ip link add type $MODULE || die "Unable to add '$IFACE' interface"
+    sudo ip link set $IFACE up || die "Unable to up '$IFACE' interface"
+fi
+
