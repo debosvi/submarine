@@ -29,7 +29,7 @@ then
   # Note that 10.0.2.2 forwards to 127.0.0.1 on the host.
 
   # Setup networking for QEMU (needs /proc)
-  ifconfig eth0 10.0.2.15
+  ifconfig eth0 $EXPECTED_IP
   route add default gw 10.0.2.2
 
   # If we have no RTC, try rdate instead:
