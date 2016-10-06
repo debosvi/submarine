@@ -50,10 +50,9 @@ then
 
   [ -z "$HANDOFF" ] && echo Type exit when done. && HANDOFF=/bin/hush
   [ -z "$CONSOLE" ] && CONSOLE=console
-  
-  modprobe vcan
-  ip link add type vcan
-  ip link set vcan0 up
+
+  modprobe kvaser_pci
+  ip link set can0 type can bitrate 125000
   
   exec /sbin/oneit -c /dev/"$CONSOLE" "$HANDOFF"
 
