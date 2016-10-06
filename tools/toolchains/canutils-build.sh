@@ -25,7 +25,7 @@ fi
 popd
 
 if [ ! -f .configure ]; then
-    CFLAGS=-static $SRC_DIR/$CANUTILS_NAME/configure --host=$CROSS_ARCH --enable-shared=no --prefix=$TGT_DIR/$CROSS_TARGET/$CANUTILS_NAME/rootfs || die "Unable to configure can-utils";
+    $SRC_DIR/$CANUTILS_NAME/configure --host=$CROSS_ARCH --disable-shared --prefix=$TGT_DIR/$CROSS_TARGET/$CANUTILS_NAME/rootfs || die "Unable to configure can-utils";
     touch .configure
 fi
 

@@ -89,6 +89,9 @@ function download_archive {
         elif wget --spider -q $url/v$ver.tar.gz; then
             archive=v$ver.tar.gz
             output=$name.tar.gz
+        elif wget --spider -q $url/$ver.zip; then
+            archive=$ver.zip
+            output=$name.zip
         elif wget --spider -q $url/master.zip; then
             archive=master.zip
             output=$name.zip
