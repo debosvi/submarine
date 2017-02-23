@@ -1,0 +1,30 @@
+
+message(STATUS "Found component in @LOCAL_COMP_ROOTDIR@")
+
+include(@LOCAL_COMP_ROOTDIR@/comp.cmake)
+
+COMP_CHECK_VARS()
+    
+include_directories(@LOCAL_COMP_ROOTDIR@/files/include)
+
+BOZ_COMP_FIND_APIS(@LOCAL_COMP_ROOTDIR@/files)     
+
+message(STATUS "Check presence of target cmake files in @LOCAL_COMP_ROOTDIR@/targets)")
+file(GLOB TGT_LIST @LOCAL_COMP_ROOTDIR@/targets/*.cmake)
+
+if(NOT "${TGT_LIST}" STREQUAL "")
+    foreach(tgt_file ${TGT_LIST}) 
+        get_filename_component(tgt_name ${tgt_file} NAME_WE)
+        
+        ## prepare configure_file
+        set(LOCAL_SRC_ROOTDIR @LOCAL_COMP_ROOTDIR@/files)
+        set(LOCAL_TGT_CMAKEFILE ${tgt_file})
+
+        configure_file(
+            ${BOZ_EXT_BUILD_DIR}/generic/CMakeLists.gen.txt
+            @LOCAL_COMP_SRCDIR@/${tgt_name}/CMakeLists.txt
+            @ONLY)  
+        add_subdirectory(@LOCAL_COMP_SRCDIR@/${tgt_name} @LOCAL_COMP_GENDIR@/${tgt_name})       
+    endforeach()
+endif()
+
