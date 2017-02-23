@@ -27,7 +27,7 @@ macro (BOZ_COMP_FIND_APIS dir)
                 BOZ_INSTALL_HEADER(${COMP_HEADER_PREFIX}/${cp_file})
             endforeach()
         else()
-            message(SEND_ERROR "Not any public API found in ${dir}")
+            message(STATUS "Not any public API found in ${dir}")
         endif()       
     else()
         message(SEND_ERROR "Unable to find public API directory in ${dir}")
@@ -52,27 +52,33 @@ macro (BOZ_COMP_FIND_APIS dir)
     endif()
 endmacro()
 
+macro (BOZ_COMPS_ADD_COMP comp_dir)
+    message(STATUS "Parse component from directory: ${comp_dir}")
+    get_filename_component(name ${comp_dir} NAME)  
+    
+    ## prepare configure_file
+    set(LOCAL_COMP_ROOTDIR ${comp_dir})
+    set(LOCAL_COMP_SRCDIR ${CMAKE_BINARY_DIR}/comps/src/${name})
+    set(LOCAL_COMP_GENDIR ${CMAKE_BINARY_DIR}/comps/build/${name})
+
+    configure_file(
+            ${BOZ_EXT_BUILD_DIR}/generic/CMakeLists.comp.txt
+            ${CMAKE_BINARY_DIR}/comps/src/${name}/CMakeLists.txt
+            @ONLY)  
+    add_subdirectory(${CMAKE_BINARY_DIR}/comps/src/${name} ${CMAKE_BINARY_DIR}/comps/build/${name})
+endmacro()
+
 macro (BOZ_COMPS_FIND_ALL main_dir)
     message(STATUS "Find components from root directory: ${main_dir}")
     file(GLOB_RECURSE ALL_COMPS 
-        RELATIVE ${main_dir}
-        "${main_dir}/*/comp.cmake")
+        # RELATIVE ${main_dir} 
+        "${main_dir}/comp.cmake")
     message(STATUS "Components found from root directory: ${ALL_COMPS}")
     if(NOT "${ALL_COMPS}" STREQUAL "")
         foreach(comp ${ALL_COMPS})
             get_filename_component(comp_dir ${comp} DIRECTORY)
-            get_filename_component(comp_dir2 ${comp_dir} NAME)
-            
-            ## prepare configure_file
-            set(LOCAL_COMP_ROOTDIR ${main_dir}/${comp_dir})
-            set(LOCAL_COMP_SRCDIR ${CMAKE_BINARY_DIR}/comps/src/${comp_dir2})
-            set(LOCAL_COMP_GENDIR ${CMAKE_BINARY_DIR}/comps/build/${comp_dir2})
 
-            configure_file(
-                    ${BOZ_EXT_BUILD_DIR}/generic/CMakeLists.comp.txt
-                    ${CMAKE_BINARY_DIR}/comps/src/${comp_dir2}/CMakeLists.txt
-                    @ONLY)  
-            add_subdirectory(${CMAKE_BINARY_DIR}/comps/src/${comp_dir2} ${CMAKE_BINARY_DIR}/comps/build/${comp_dir2})
+            BOZ_COMPS_ADD_COMP(${comp_dir})
         endforeach()
     else()
         message(SEND_ERROR "Unable to find any components in ${main_dir}")
