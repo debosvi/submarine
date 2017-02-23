@@ -1,0 +1,34 @@
+
+message(STATUS "generated folder (${LOCAL_GEN_DIR})")
+file(REMOVE_RECURSE ${LOCAL_GEN_DIR})
+
+macro (GEN_BINN_XXX name type binn)
+    set(FUNCTION_NAME ${name})
+    set(ARG_TYPE ${type})
+    set(BINN_TYPE ${binn})
+    
+    file(MAKE_DIRECTORY ${LOCAL_GEN_DIR})
+    
+    configure_file(
+        ${LOCAL_SRC_ROOTDIR}/${LOCAL_SRC_DIR_SUFFIX}/binn_xxx.c.tmpl
+        ${CMAKE_CURRENT_SOURCE_DIR}/gen/binn_${name}.c
+        @ONLY)
+endmacro()
+
+macro (GEN_BINN_TO_XXX name type binn)
+    set(FUNCTION_NAME ${name})
+    set(ARG_TYPE ${type})
+    set(BINN_TYPE ${binn})
+    
+    file(MAKE_DIRECTORY ${LOCAL_GEN_DIR})
+    
+    configure_file(
+        ${LOCAL_SRC_ROOTDIR}/${LOCAL_SRC_DIR_SUFFIX}/binn_to_xxx.c.tmpl
+        ${CMAKE_CURRENT_SOURCE_DIR}/gen/binn_to_${name}.c
+        @ONLY)
+endmacro()
+
+macro (GEN_BINN_ALL_XXX name type binn)
+    GEN_BINN_XXX(${name} ${type} ${binn})
+    GEN_BINN_TO_XXX(${name} ${type} ${binn})
+endmacro()
