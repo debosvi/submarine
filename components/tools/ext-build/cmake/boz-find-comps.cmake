@@ -15,7 +15,7 @@ macro (BOZ_COMP_FIND_APIS dir)
     message(STATUS "Find APIs directory in ${dir}")
     ## find PUBLIC include dir
     if(EXISTS "${dir}/include/public" AND IS_DIRECTORY "${dir}/include/public")
-        file(GLOB ALL_PUBLIC "${dir}/include/public/*.h")
+        file(GLOB_RECURSE ALL_PUBLIC "${dir}/include/public/*.h")
         if(NOT "${ALL_PUBLIC}" STREQUAL "")
             foreach(api ${ALL_PUBLIC})
                 file(RELATIVE_PATH cp_file ${dir}/include/public ${api} )
@@ -35,7 +35,7 @@ macro (BOZ_COMP_FIND_APIS dir)
     
     ## find RESTRICTED include dir
     if(EXISTS "${dir}/include/restricted" AND IS_DIRECTORY "${dir}/include/restricted")
-        file(GLOB ALL_RESTRICTED "${dir}/include/restricted/*.h")
+        file(GLOB_RECURSE ALL_RESTRICTED "${dir}/include/restricted/*.h")
         if(NOT "${ALL_RESTRICTED}" STREQUAL "")
             foreach(api ${ALL_RESTRICTED})
                 file(RELATIVE_PATH cp_file ${dir}/include/restricted ${api} )
