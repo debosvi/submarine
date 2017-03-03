@@ -36,7 +36,6 @@ typedef uint16_t    Bitfield16bits;     /**< champ de 16 bits  */
 #define NULL            ((void *)0)     /**< definition de NULL   */
 #endif
 
-
  /* this defines are used for schedule table management       */
 #define OS_NO_SCHEDULE_TABLE_CHANGE_REQUEST_PENDING ((uint8_t) 0xFF)
 #define OS_SCHEDULE_EMPTY_TABLE ((uint8_t)0)

@@ -19,8 +19,15 @@ set(LOCAL_SRC_DIR_SUFFIX "src/os")
 ## mandatory
 set(LOCAL_SRC_FILES 
     J1939_OS_priv.c
-    J1939_ctx_zero.c
+    J1939_OS_ctx_zero.c
+    J1939_OS_timer_zero.c
     J1939_OS_init.c
+    J1939_OS_activate_task.c
+    J1939_OS_term_current_task.c
+    J1939_OS_alarm_set.c
+    J1939_OS_alarm_reset.c
+    J1939_OS_alarm_gettime.c
+    J1939_OS_copymem.c
 )
 
 ## LOCAL_SRC_FILES_ADDED is the list of files to compile with absolute path (useful if generated files are somewhere).
