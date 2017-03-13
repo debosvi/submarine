@@ -30,6 +30,8 @@ extern J1939_OS_context_t J1939_OS_main_ctx_g;
 #define J1939_OS_CONTEXT_ZERO   { .tasks_cpt=0, .timers=0, .active_task=0, .current_task=0, .max_timers=0, .max_tasks=0 }
 extern const J1939_OS_context_t J1939_OS_ctx_zero;
 
+extern J1939_error_t J1939_OS_init_internal(void);
+
 #endif // _J1939_OS_PRIV_H__
 
 /*----------------------------- end of file -----------------------------*/

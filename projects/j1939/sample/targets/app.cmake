@@ -1,36 +1,19 @@
 
 ## generation profile name.
-## mandatory (generates library profile)
-set(COMP_SRC_PROFILE "library")
+## mandatory (generates application)
+set(COMP_SRC_PROFILE "application")
 
-## COMP_SRC_LIB_TYPE var must be set to either 'static', 'shared' or 'both'.
+## COMP_SRC_APP_NAME var must be set to binary name.
 ## mandatory
-set(COMP_SRC_LIB_TYPE "static")
-
-## COMP_SRC_LIB_NAME var must be set to library name (without prefix and extension).
-## mandatory
-set(COMP_SRC_LIB_NAME "j1939_generic")
+set(COMP_SRC_APP_NAME "j1939_sample")
 
 ## LOCAL_SRC_DIR_SUFFIX is the relative path prefix to append to component files directory in order to find source files to compile.
 ## optional but recommended
-set(LOCAL_SRC_DIR_SUFFIX "src/os")
+set(LOCAL_SRC_DIR_SUFFIX app)
 
 ## LOCAL_SRC_FILES is the list of files to compile (do not use any absolute path, automatic appending is performed by complete makefiles scheme.
 ## mandatory
-set(LOCAL_SRC_FILES 
-    J1939_OS_priv.c
-    J1939_OS_ctx_zero.c
-    J1939_OS_timer_zero.c
-    J1939_OS_init_alloc.c
-    J1939_OS_init_static.c
-    J1939_OS_init_internal.c
-    J1939_OS_activate_task.c
-    J1939_OS_term_current_task.c
-    J1939_OS_alarm_set.c
-    J1939_OS_alarm_reset.c
-    J1939_OS_alarm_gettime.c
-    J1939_OS_copymem.c
-)
+set(LOCAL_SRC_FILES main.c)
 
 ## LOCAL_SRC_FILES_ADDED is the list of files to compile with absolute path (useful if generated files are somewhere).
 ## optional
@@ -39,21 +22,19 @@ set(LOCAL_SRC_FILES
 ## COMP_SRC_LIB_DEPS is the list of library dependencies (internal dependencies only).
 ## Build system will decide which static or shared is recommended.
 ## optional
-# set(COMP_SRC_LIB_DEPS other_lib)
+# set(COMP_SRC_LIB_DEPS j1939_generic)
 
 ## COMP_SRC_LIB_DEPS_STATIC is the list of static library dependencies (internal dependencies only).
 ## Be careful about system compatibility between static and shared libraries
 ## optional
-# set(COMP_SRC_LIB_DEPS_STATIC other_static_lib)
+set(COMP_SRC_LIB_DEPS_STATIC j1939_generic)
 
 ## COMP_SRC_LIB_DEPS_SHARED is the list of shared library dependencies (internal dependencies only).
 ## Be careful about system compatibility between static and shared libraries.
 ## optional
-# set(COMP_SRC_LIB_DEPS_SHARED )
+# set(COMP_SRC_LIB_DEPS_SHARED other_shared_lib)
 
 
 ## COMP_EXT_LIB_DEPS is the list of external library dependencies.
 ## optional
-set(COMP_EXT_LIB_DEPS
-    skarnet
-)
+# set(COMP_EXT_LIB_DEPS external_lib)

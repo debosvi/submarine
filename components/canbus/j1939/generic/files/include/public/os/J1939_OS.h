@@ -2,9 +2,9 @@
 #ifndef __J1939_OS_H__
 #define __J1939_OS_H__
 
-#include "j1939/os/J1939_Types.h"
+#include "J1939_config.h"		// from specific part of J1939 stack
 
-// #include "p_J1939_OS.h"
+#include "j1939/os/J1939_Types.h"
 
 #define J1939_ALARM_CALLBACK(AlarmID)       void AlarmID##_callback (void)  /**< Sub-task name */
 #define J1939_ALARM_CALLBACK_BIS(AlarmID)   J1939_ALARM_CALLBACK(AlarmID)   /**< Sub-task name */
@@ -41,7 +41,11 @@ typedef enum {
     J1939_ERR_COUNT         /**< Error count */
 } J1939_error_t;
 
-extern J1939_error_t J1939_OS_init(const J1939_timerId_t max_timers, const J1939_taskId_t max_tasks);
+extern J1939_error_t J1939_OS_init_static(void);
+extern J1939_error_t J1939_OS_init_alloc(const J1939_timerId_t max_timers, const J1939_taskId_t max_tasks);
+
+// default static init
+#define J1939_OS_init J1939_OS_init_static
 
 extern J1939_error_t J1939_OS_activate_task(const J1939_taskId_t taskId);
 extern J1939_error_t J1939_OS_term_current_task(void);
