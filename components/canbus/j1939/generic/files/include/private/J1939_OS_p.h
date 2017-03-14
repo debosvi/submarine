@@ -4,6 +4,8 @@
 
 #include "j1939/os/J1939_OS.h"
 
+#include "j1939_section_1.inc"
+
 typedef struct {
     J1939_BOOL      running;        /**< indicates if timer is running */
     J1939_time_t    timeout_ms;     /**< timeout elapse target */
@@ -32,6 +34,8 @@ extern J1939_OS_context_t J1939_OS_main_ctx_g;
 extern const J1939_OS_context_t J1939_OS_ctx_zero;
 
 extern J1939_error_t J1939_OS_init_internal(void);
+
+#include "j1939_section_0.inc"
 
 #endif // _J1939_OS_PRIV_H__
 

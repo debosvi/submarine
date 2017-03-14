@@ -8,8 +8,9 @@
 	Types
 -------------------------------------------------------------------------*/
 
-typedef uint8_t     Bitfield8bits;      /**< champ de 8 bits   */
-typedef uint16_t    Bitfield16bits;     /**< champ de 16 bits  */
+typedef uint8_t     J1939_bit_fields8_t;        /**< champ de 8 bits   */
+typedef uint16_t    J1939_bit_fields16_t;       /**< champ de 16 bits  */
+typedef uint8_t     J1939_size_t;               /**<  255 ipdus possible (ems + rcp) dans la NM */
 
 // typedef struct
 // {

@@ -15,6 +15,8 @@ include($ENV{SUBMARINE_PROJECT_DIR}/components/tools/ext-build/cmake/boz-build.c
 include(tools.cmake)
 
 include_directories(${CMAKE_SOURCE_DIR})
+include_directories(${CMAKE_SOURCE_DIR}/sample/files/app)
 
 BOZ_COMPS_FIND_ALL("$ENV{SUBMARINE_PROJECT_DIR}/components/canbus/j1939")
 BOZ_COMPS_FIND_ALL("${CMAKE_SOURCE_DIR}/sample")
+

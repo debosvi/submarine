@@ -31,7 +31,8 @@ typedef uint8_t     J1939_timerId_t;
 typedef uint8_t     J1939_taskId_t;
 typedef uint16_t    J1939_time_t;
 
-#define J1939_INVALID_TIMEOUT       (J1939_time_t)0xFFFF
+#define J1939_INVALID_TIMER_ID      ((J1939_timerId_t)0xFF)
+#define J1939_INVALID_TIMEOUT       ((J1939_time_t)0xFFFF)
 
 typedef enum {
     J1939_ERR_SUCCESS= 0,   /**< No error */

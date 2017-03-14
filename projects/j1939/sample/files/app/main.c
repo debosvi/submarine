@@ -3,65 +3,11 @@
 #include <poll.h>
 
 #include <j1939/os/J1939_OS.h>
-
-static J1939_TASK(TASK_0_ID) {
-    fprintf(stderr, "%s: call\n", __PRETTY_FUNCTION__);
-}
-
-static J1939_TASK(TASK_1_ID) {
-    fprintf(stderr, "%s: call\n", __PRETTY_FUNCTION__);
-}
-
-static J1939_TASK(TASK_2_ID) {
-    fprintf(stderr, "%s: call\n", __PRETTY_FUNCTION__);
-}
-
-static J1939_ALARM_CALLBACK(TIMER_0_ID) {
-    fprintf(stderr, "%s: call\n", __PRETTY_FUNCTION__);
-}
-
-static J1939_ALARM_CALLBACK(TIMER_1_ID) {
-    fprintf(stderr, "%s: call\n", __PRETTY_FUNCTION__);
-}
-
-static J1939_ALARM_CALLBACK(TIMER_2_ID) {
-    fprintf(stderr, "%s: call\n", __PRETTY_FUNCTION__);
-}
-
-static J1939_ALARM_CALLBACK(TIMER_3_ID) {
-    fprintf(stderr, "%s: call\n", __PRETTY_FUNCTION__);
-}
-
-static J1939_ALARM_CALLBACK(TIMER_4_ID) {
-    fprintf(stderr, "%s: call\n", __PRETTY_FUNCTION__);
-}
-
-static J1939_ALARM_CALLBACK(TIMER_5_ID) {
-    fprintf(stderr, "%s: call\n", __PRETTY_FUNCTION__);
-}
-
-const J1939_OS_task_t J1939_tasks_all[J1939_NB_TASKS] = {
-    J1939_TASK_DEF(TASK_0_ID),
-    J1939_TASK_DEF(TASK_1_ID),
-    J1939_TASK_DEF(TASK_2_ID),
-};
-
-const J1939_OS_task_t* J1939_tasks_g = &J1939_tasks_all[0];
-
-const J1939_OS_timerCB_t J1939_timers_all[J1939_NB_TIMERS] = {
-    J1939_ALARM_CALLBACK_DEF(TIMER_0_ID),
-    J1939_ALARM_CALLBACK_DEF(TIMER_1_ID),
-    J1939_ALARM_CALLBACK_DEF(TIMER_2_ID),
-    J1939_ALARM_CALLBACK_DEF(TIMER_3_ID),
-    J1939_ALARM_CALLBACK_DEF(TIMER_4_ID),
-    J1939_ALARM_CALLBACK_DEF(TIMER_5_ID),
-
-};
-
-const J1939_OS_timerCB_t* J1939_timers_g = &J1939_timers_all[0];
+#include <j1939/il/J1939_IL.h>
 
 int main(void) {
     J1939_error_t _ret=J1939_ERR_SUCCESS;
+    J1939_IL_status_t _status=J1939_IL_ERR_OK;
     int i=0;
     
     _ret=J1939_OS_init();
@@ -95,6 +41,14 @@ int main(void) {
     _ret=J1939_OS_alarm_set(TIMER_5_ID, 7, 33);
     if(_ret != J1939_ERR_SUCCESS)
         fprintf(stderr, "%s: J1939_OS_alarm_set TIMER_5_ID error: %d\n", __PRETTY_FUNCTION__, _ret);
+    
+    _status=J1939_IL_start(J1939_IL_OPE);
+    if(_status != J1939_IL_ERR_OK)
+        fprintf(stderr, "%s: J1939_IL_start error: %d\n", __PRETTY_FUNCTION__, _status);
+    
+    _status=J1939_IL_stop(J1939_IL_SHUT_IMMEDIATE);
+    if(_status != J1939_IL_ERR_OK)
+        fprintf(stderr, "%s: J1939_IL_start error: %d\n", __PRETTY_FUNCTION__, _status);
     
     while(i++<128) {
         fprintf(stderr, "%s: loop %d\n", __PRETTY_FUNCTION__, i);

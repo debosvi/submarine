@@ -3,6 +3,7 @@
 
 #include "private/J1939_OS_p.h"
 
+#if J1939_OS_USE_MEM_ALLOCATOR == 1
 ///////////////////////////////////////////////////////////////////////////////
 J1939_error_t J1939_OS_init_alloc(const J1939_timerId_t max_timers, const J1939_taskId_t max_tasks) {
     J1939_error_t _ret=J1939_ERR_SUCCESS;
@@ -30,3 +31,5 @@ exit:
     }
     return _ret;
 }
+
+#endif
