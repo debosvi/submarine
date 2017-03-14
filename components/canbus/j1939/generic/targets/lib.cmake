@@ -30,6 +30,8 @@ set(LOCAL_SRC_FILES
     J1939_OS_alarm_reset.c
     J1939_OS_alarm_gettime.c
     J1939_OS_copymem.c
+    J1939_OS_sched_timers.c
+    J1939_OS_sched_tasks.c
 )
 
 ## LOCAL_SRC_FILES_ADDED is the list of files to compile with absolute path (useful if generated files are somewhere).

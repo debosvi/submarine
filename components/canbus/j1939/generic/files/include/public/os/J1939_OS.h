@@ -24,12 +24,14 @@
 typedef void (*J1939_OS_task_t)(void);
 typedef void (*J1939_OS_timerCB_t)(void);
 
+extern const J1939_OS_task_t* J1939_tasks_g;
+extern const J1939_OS_timerCB_t* J1939_timers_g;
+
 typedef uint8_t     J1939_timerId_t;
 typedef uint8_t     J1939_taskId_t;
 typedef uint16_t    J1939_time_t;
 
 #define J1939_INVALID_TIMEOUT       (J1939_time_t)0xFFFF
-
 
 typedef enum {
     J1939_ERR_SUCCESS= 0,   /**< No error */

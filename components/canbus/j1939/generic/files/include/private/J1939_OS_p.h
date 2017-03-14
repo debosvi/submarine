@@ -14,6 +14,7 @@ extern const J1939_OS_timer_t J1939_OS_timer_zero;
 
 typedef uint8_t J1939_OS_task_cpt_t;
 #define J1939_OS_MAX_TASK_ACTIVATION    (J1939_OS_task_cpt_t)0xff
+#define J1939_OS_MAX_TASKS              (8)
 
 typedef struct {
     J1939_OS_task_cpt_t*    tasks_cpt;      /**< Compteur d'activation des tâches */

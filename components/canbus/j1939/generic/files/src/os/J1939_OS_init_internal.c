@@ -5,6 +5,10 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 J1939_error_t J1939_OS_init_internal(void) {
+    J1939_error_t _ret=J1939_ERR_SUCCESS;
+    
+    if(J1939_OS_main_ctx_g.max_tasks>J1939_OS_MAX_TASKS) { _ret=J1939_ERR_INVAL; goto exit; }
+
     if(J1939_OS_main_ctx_g.timers && J1939_OS_main_ctx_g.max_timers) {
         J1939_timerId_t i=0;
         for(; i<J1939_OS_main_ctx_g.max_timers; i++)
@@ -15,6 +19,8 @@ J1939_error_t J1939_OS_init_internal(void) {
         J1939_taskId_t i=0;
         for(; i<J1939_OS_main_ctx_g.max_tasks; i++)
             J1939_OS_main_ctx_g.tasks_cpt[i] = 0;
-    }    
-    return J1939_ERR_SUCCESS;
+    } 
+    
+exit:
+    return _ret;
 }
