@@ -19,58 +19,9 @@ static void sig_handler(const int sig) {
     
 }
 
-static const char * const myTaskName  = "myTaskName";
-#define NB_STACK_WORD   (256)
-static int myTaskStack[NB_STACK_WORD];
-static const unsigned myTaskParam = 0x1234;
-static StaticTask_t myTaskData;
-static TaskHandle_t myTaskHandle;
-
-#define MYTASK_FREQUENCY_MS			( 1000 / portTICK_PERIOD_MS )
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-static void myTaskFct(void *parg) {
-    TickType_t xNextWakeTime;
-    unsigned arg = *(unsigned*)parg;
-    const TickType_t xBlockTime = pdMS_TO_TICKS( MYTASK_FREQUENCY_MS );
-    
-    printf("%s: arg(%u)\n", __PRETTY_FUNCTION__, arg);
-    
-    xNextWakeTime = xTaskGetTickCount();
-
-    for( ;; ) {
-        printf("%s: loop\n", __PRETTY_FUNCTION__);
-        vTaskDelayUntil( &xNextWakeTime, xBlockTime );
-    }
-}
-
-
-static const char * const myTaskName2  = "myTaskName2";
-#define NB_STACK_WORD2   (256)
-static int myTaskStack2[NB_STACK_WORD2];
-static const unsigned myTaskParam2 = 0x4567;
-static StaticTask_t myTaskData2;
-static TaskHandle_t myTaskHandle2;
-
-#define MYTASK2_FREQUENCY_MS			( 300 / portTICK_PERIOD_MS )
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-static void myTaskFct2(void *parg) {
-    TickType_t xNextWakeTime;
-    unsigned arg = *(unsigned*)parg;
-    const TickType_t xBlockTime = pdMS_TO_TICKS( MYTASK2_FREQUENCY_MS );
-    
-    printf("%s: arg(%u)\n", __PRETTY_FUNCTION__, arg);
-    
-    xNextWakeTime = xTaskGetTickCount();
-
-    for( ;; ) {
-        printf("%s: loop\n", __PRETTY_FUNCTION__);
-        vTaskDelayUntil( &xNextWakeTime, xBlockTime );
-    }
-}
+extern void myTask_Rx_init(void);
+extern void myTask_Tx_init(void);
+extern void myTimer_init(void);
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -79,26 +30,10 @@ int main( void ) {
     
     signal(SIGINT, sig_handler);
     
-    myTaskHandle = xTaskCreateStatic(
-        myTaskFct, 
-        myTaskName,
-        NB_STACK_WORD,
-        (void*)&myTaskParam,
-        1,
-        (void*)&myTaskStack[0],
-        &myTaskData);
-    printf("%s: task created\n", __PRETTY_FUNCTION__);
-    
-    myTaskHandle2 = xTaskCreateStatic(
-        myTaskFct2, 
-        myTaskName2,
-        NB_STACK_WORD2,
-        (void*)&myTaskParam2,
-        1,
-        (void*)&myTaskStack2[0],
-        &myTaskData2);
-    printf("%s: task2 created\n", __PRETTY_FUNCTION__);
-        
+    myTask_Rx_init();
+    myTask_Tx_init();
+    myTimer_init();
+	
     vTaskStartScheduler();
     printf("%s: end\n", __PRETTY_FUNCTION__);
             

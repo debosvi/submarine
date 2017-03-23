@@ -13,7 +13,7 @@ HEADER_RTOS_PLUS= -I$(RTOS_DIR_PLUS)/Source/FreeRTOS-Plus-Trace/Include
 
 TARGET = rtos_demo_pc
 
-OBJS=main.o
+OBJS=main.o myTaskRX.o myTaskTX.o mytimer.o
 
 OBJS_GEN=
 
