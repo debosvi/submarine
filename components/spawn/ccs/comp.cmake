@@ -1,0 +1,3 @@
+
+set(COMP_NAME "CCS")
+set(COMP_HEADER_PREFIX "ccs")

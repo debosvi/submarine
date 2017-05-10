@@ -1,0 +1,3 @@
+
+set(COMP_NAME "EQPT")
+set(COMP_HEADER_PREFIX "subm")

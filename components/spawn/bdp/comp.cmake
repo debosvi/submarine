@@ -1,0 +1,3 @@
+
+set(COMP_NAME "BDP")
+set(COMP_HEADER_PREFIX "bdp")

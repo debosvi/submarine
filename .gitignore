@@ -12,3 +12,8 @@ dl/
 
 # temp file
 *~
+*.o
+
+# cmake templates
+*.cmake.tmpl
+*new_comp*
