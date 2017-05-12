@@ -1,0 +1,3 @@
+
+set(COMP_NAME "GVR")
+set(COMP_HEADER_PREFIX "gvr")
