@@ -54,7 +54,7 @@ if(${MINGW})
     set(CMAKE_EXECUTABLE_SUFFIX ".exe")
 endif()
 
-add_definitions(-std=c99)
+#add_definitions(-std=c99)
 add_definitions(-Wall  -Wextra)
 
 set(CMAKE_C_FLAGS_DEBUG "-O0 -ggdb")
