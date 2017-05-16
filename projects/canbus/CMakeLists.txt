@@ -16,6 +16,8 @@ include(tools.cmake)
 
 set(BOZ_ALL_COMPS_DIR "$ENV{SUBMARINE_PROJECT_DIR}/components")
 
-add_definitions(-D__USE_CANUDP)
+if(${CYGWIN})
+    add_definitions(-D__USE_CANUDP)
+endif()
 
 BOZ_COMPS_FIND_ALL("${BOZ_ALL_COMPS_DIR}/canbus")

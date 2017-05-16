@@ -21,6 +21,9 @@ set(LOCAL_SRC_FILES
     canbus_p.c
     canbus_gen_id.c
     canbus_open.c
+    canbus_close.c
+    canbus_send_data.c
+    canbus_recv_data.c
 )
 
 ## LOCAL_SRC_FILES_ADDED is the list of files to compile with absolute path (useful if generated files are somewhere).

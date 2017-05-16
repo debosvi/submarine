@@ -27,7 +27,8 @@ typedef uint32_t canbus_addr_t;
 extern int canbus_open(const char* const device, const int use_stamp);
 extern int canbus_close(const int fd);
 extern int canbus_add_mask(const canbus_addr_t id, const canbus_addr_t mask);
-extern int canbus_send_data(const canbus_addr_t id, const char* data, const size_t dlc);
+extern int canbus_send_data(const int fd, const canbus_addr_t id, const char* data, const size_t dlc);
+extern int canbus_recv_data(const int fd, canbus_addr_t *id, char* data, size_t* dlc);
 
 extern uint32_t canbus_gen_id(const canbus_addr_t source, const canbus_addr_t command);
 
