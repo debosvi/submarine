@@ -52,10 +52,14 @@ _exit:
     return fd;
 }
 #else
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
 
-static int canbus_open_udp(void) {
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>    
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+static int canbus_open_udp(const int server) {
     int _ret=-1;
     int fd=-1;
    
@@ -65,10 +69,30 @@ static int canbus_open_udp(void) {
         goto _exit;
     }
     
-    if(socket_bind4_reuse (fd, canbus_udp_addr, canbus_udp_port)) {
+    if(server && socket_bind4_reuse (fd, canbus_udp_addr, canbus_udp_port)) {
         strerr_warn3x(__PRETTY_FUNCTION__, ": error while binding UDP socket: ", strerror(errno));
         goto _exit;
     }
+    
+    if(server) {
+        struct ip_mreq mreq;
+        
+        memset(&mreq, 0, sizeof(struct ip_mreq));
+        memcpy(&mreq.imr_multiaddr.s_addr, canbus_mcast_addr, 4) ;
+        memcpy(&mreq.imr_interface.s_addr, canbus_udp_addr, 4) ;
+        if (setsockopt(fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(struct ip_mreq)) < 0) {
+            strerr_warn3x(__PRETTY_FUNCTION__, ": error while joining mcast group: ", strerror(errno));
+            goto _exit;
+        }        
+    }
+    
+    // if(server) {
+        // char loopch = 1;
+        // if (setsockopt(fd, IPPROTO_IP, IP_MULTICAST_LOOP, (char *)&loopch, sizeof(loopch)) < 0) {
+            // strerr_warn3x(__PRETTY_FUNCTION__, ": error while loop mcast interface: ", strerror(errno));
+            // goto _exit;
+        // }        
+    // }        
     
     _ret=0;
     
@@ -91,8 +115,7 @@ int canbus_open(const char* const device, const int use_stamp) {
 #ifndef __USE_CANUDP
     fd=canbus_open_regular(const char* const device, const int use_stamp);
 #else
-    (void)use_stamp;
-    fd=canbus_open_udp();
+    fd=canbus_open_udp(use_stamp);
 #endif
 
 _exit:

@@ -29,6 +29,7 @@
 
 #ifdef __USE_CANUDP
 extern const char canbus_udp_addr[4];
+extern const char canbus_mcast_addr[4];
 extern const uint16_t canbus_udp_port;
 #endif
 

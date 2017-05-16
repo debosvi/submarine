@@ -14,7 +14,12 @@ include($ENV{SUBMARINE_PROJECT_DIR}/components/tools/ext-build/cmake/boz-build.c
 
 include(tools.cmake)
 
-set(BOZ_ALL_COMPS_DIR "$ENV{SUBMARINE_PROJECT_DIR}/components/spawn")
+set(BOZ_ALL_COMPS_DIR "$ENV{SUBMARINE_PROJECT_DIR}/components")
 
 add_definitions(-DBOZ_ALL_COMPS_DIR=${BOZ_ALL_COMPS_DIR})
-BOZ_COMPS_FIND_ALL("${BOZ_ALL_COMPS_DIR}/")
+
+if(${CYGWIN})
+    add_definitions(-D__USE_CANUDP)
+endif()
+BOZ_COMPS_FIND_ALL("${BOZ_ALL_COMPS_DIR}/spawn")
+BOZ_COMPS_FIND_ALL("${BOZ_ALL_COMPS_DIR}/canbus")

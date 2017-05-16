@@ -8,8 +8,7 @@
 #include <canbus/canbus.h>
 
 static int prog_send=0;
-static canbus_addr_t msg_id=0;
-static char msg_data[8];
+static canbus_msg_t msg;
     
 int main(int ac, char **av) {
     int fd=-1;
@@ -17,18 +16,19 @@ int main(int ac, char **av) {
     
     if(ac>1) {
         prog_send=1;
-        msg_id=canbus_gen_id(CANBUS_EQP_PWR, CANBUS_ID_PWR_STATUS);
-        msg_data[0]=0x01;
-        msg_data[1]=0x02;
-        msg_data[2]=0x03;
-        msg_data[3]=0x04;
-        msg_data[4]=0x05;
-        msg_data[5]=0x06;
-        msg_data[6]=0x07;
-        msg_data[7]=0x08;
+        msg.id=canbus_gen_id(CANBUS_EQP_CCS, CANBUS_ID_PWR_STATUS);
+        msg.dlc=CANBUS_DATA_SIZE;
+        msg.data[0]=0x01;
+        msg.data[1]=0x02;
+        msg.data[2]=0x03;
+        msg.data[3]=0x04;
+        msg.data[4]=0x05;
+        msg.data[5]=0x06;
+        msg.data[6]=0x07;
+        msg.data[7]=0x08;
     }
     
-    fd=canbus_open("/dev/can0", 0);
+    fd=canbus_open("/dev/can0", !prog_send);
     if(fd<0) return 1;
     
     {
@@ -52,15 +52,13 @@ int main(int ac, char **av) {
         if(prog_send) {        
             if(x.revents & IOPAUSE_WRITE) {
                 strerr_warnw1x("iopause write");
-                canbus_send_data(fd, msg_id, msg_data, 8);
+                canbus_send_data(fd, &msg);
             }
         }
         else {
-            size_t dlc=0;
-            
             if(x.revents & IOPAUSE_READ) {
                 strerr_warnw1x("iopause read");
-                canbus_recv_data(fd, &msg_id, msg_data, &dlc);
+                canbus_recv_data(fd, &msg);
             }
         }
     }

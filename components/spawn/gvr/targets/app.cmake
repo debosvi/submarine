@@ -18,7 +18,7 @@ set(LOCAL_SRC_FILES main.c)
 ## LOCAL_SRC_FILES_ADDED is the list of files to compile with absolute path (useful if generated files are somewhere).
 ## optional
 set(LOCAL_SRC_FILES_ADDED 
-    ${BOZ_ALL_COMPS_DIR}/eqpt/files/lib/main.c
+    ${BOZ_ALL_COMPS_DIR}/spawn/eqpt/files/lib/main.c
 )
 
 ## COMP_SRC_LIB_DEPS is the list of library dependencies (internal dependencies only).
