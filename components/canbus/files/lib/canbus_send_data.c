@@ -4,7 +4,7 @@
 #ifndef __USE_CANUDP
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-static int canbus_send_regular(const int fd, const canbus_msg_t* msg) {
+static int canbus_send_regular(const int fd, const canbus_frame_t* msg) {
     int _ret=-1;
 
     
@@ -14,9 +14,9 @@ _exit:
 #else
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-#define BUF_SIZE    (1+sizeof(canbus_addr_t)+CANBUS_DATA_SIZE+1)
+#define BUF_SIZE    (1+sizeof(canbus_addr_t)+CANBUS_DATA_SIZE_MAX+1)
 
-static int canbus_send_udp(const int fd, const canbus_msg_t* msg) {
+static int canbus_send_udp(const int fd, const canbus_frame_t* msg) {
     int _ret=-1;
     uint8_t buf[BUF_SIZE];
     uint8_t *p=buf;
@@ -35,7 +35,7 @@ static int canbus_send_udp(const int fd, const canbus_msg_t* msg) {
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-int canbus_send_data(const int fd, const canbus_msg_t* msg) {
+int canbus_send_data(const int fd, const canbus_frame_t* msg) {
     int _ret=-1;
     
     if(fd<0) goto _exit;
