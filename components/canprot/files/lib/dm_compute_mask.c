@@ -1,0 +1,13 @@
+
+#include "private/data_multiplexer.h"
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+uint64_t dm_compute_mask(const uint8_t size) {
+    uint64_t mask=0x01;
+    register uint8_t s=size;
+    while(--s) {
+        mask = (mask<<1) | 0x01;
+    }
+    return mask;
+}

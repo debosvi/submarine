@@ -25,21 +25,20 @@ extern const canprot_msg_t canprot_msg_zero;
 
 typedef struct {
     const canprot_msg_t* msg;       // message vector reference
-    const canbus_data_t* def;       // default value
-    const canbus_data_t* init;      // init value
-    canprot_data_sz_t def_sz;       // default value size (in bytes)  
-    canprot_data_sz_t init_sz;      // default value size (in bytes)  
+    const canbus_data_t* def_val;   // default value
+    const canbus_data_t* init_val;  // init value
+    canprot_data_sz_t sz_val;       // default value size (in bytes)  
     canprot_data_sz_t pos;          // position in bits in message
     canprot_data_sz_t bits;         // bits size in message
 } canprot_sig_t;
-#define CANPROT_SIG_ZERO { .msg=0, .pos=0, .bits=0, .def=0, .init=0, .def_sz=0, .init_sz=0 }
+#define CANPROT_SIG_ZERO { .msg=0, .pos=0, .bits=0, .def_val=0, .init_val=0, .sz_val=0 }
 extern const canprot_sig_t canprot_sig_zero;
 
 typedef struct {
     canbus_data_t   data[CANBUS_DATA_SIZE_MAX];        // bits size in message
-    
+    uint16_t    tick;       // tick counter in ms till 0
 } canprot_msg_state_t;
-#define CANPROT_MSG_STATE_ZERO { .data={0} }
+#define CANPROT_MSG_STATE_ZERO { .data={0}, .tick=0 }
 extern const canprot_msg_state_t canprot_msg_state_zero;
 
 // return 0 on success, 1 otherwise

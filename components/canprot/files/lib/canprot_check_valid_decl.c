@@ -1,6 +1,6 @@
 
-#include <private/canprot_p.h>
-#include <restricted/canprot_r.h>
+#include "private/canprot_p.h"
+#include "restricted/canprot_r.h"
 
 int canprot_check_valid_decl(void) {
     int _ret=1;
@@ -15,8 +15,7 @@ int canprot_check_valid_decl(void) {
     {
         register int c=0;
         for(; c<canprot_get_sigs_count(); c++) {
-            if((canprot_sigs_decl_g[c]->bits)>(8*canprot_sigs_decl_g[c]->def_sz)) goto _exit;
-            if((canprot_sigs_decl_g[c]->bits)>(8*canprot_sigs_decl_g[c]->init_sz)) goto _exit;
+            if((canprot_sigs_decl_g[c]->bits)>(8*canprot_sigs_decl_g[c]->sz_val)) goto _exit;
         }
     }
     

@@ -1,5 +1,5 @@
 
-#include <private/canprot_p.h>
+#include "private/canprot_p.h"
 
 #define ALL_MSGS_LIMIT  (64)
 #define ALL_SIGS_LIMIT  (64*ALL_MSGS_LIMIT)

@@ -1,5 +1,5 @@
 
-#include <private/canprot_p.h>
+#include "private/canprot_p.h"
 
 int canprot_fini(void) {
     int _ret=1;

@@ -5,8 +5,9 @@
 #include <skalibs/strerr2.h>
 
 #include <canprot/canprot.h>
-#include <private/canprot_p.h>
-#include <restricted/canprot_r.h>
+
+#include "private/canprot_p.h"
+#include "restricted/canprot_r.h"
 
 const canprot_msg_t msg1 = CANPROT_MSG_ZERO;
 const canprot_msg_t msg2 = CANPROT_MSG_ZERO;
@@ -19,6 +20,11 @@ const canprot_sig_t sig23 = CANPROT_SIG_ZERO;
 
 const canprot_msg_t* canprot_msgs_decl_g[] = { &msg1, &msg2, 0 };
 const canprot_sig_t* canprot_sigs_decl_g[] = { &sig11, &sig12, &sig21, &sig22, &sig23, 0 };
+
+#define CANPROT_MSG_MAX_ID      (2)
+#define CANPROT_SIGNAL_MAX_ID   (5)
+canprot_msg_state_t canprot_msg_cur_g[CANPROT_MSG_MAX_ID];    
+
     
 int main(void) {
     int r=-1;

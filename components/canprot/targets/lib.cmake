@@ -18,10 +18,19 @@ set(LOCAL_SRC_DIR_SUFFIX lib)
 ## LOCAL_SRC_FILES is the list of files to compile (do not use any absolute path, automatic appending is performed by complete makefiles scheme.
 ## mandatory
 set(LOCAL_SRC_FILES 
+    # public APIs
     canprot_p.c
     canprot_zero.c
     canprot_init.c
     canprot_fini.c
+    canprot_set_default_value.c
+    canprot_set_init_value.c
+    
+    # private APIs
+    canprot_set_data_value.c
+    dm_set_data_lsb.c
+    dm_set_data_msb.c
+    dm_compute_mask.c
 )
 
 ## LOCAL_SRC_FILES_ADDED is the list of files to compile with absolute path (useful if generated files are somewhere).
