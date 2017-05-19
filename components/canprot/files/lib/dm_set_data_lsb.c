@@ -26,13 +26,13 @@ int dm_set_data_lsb(void* out, const uint16_t max, const uint8_t pos, const uint
     
     while(1) {
         if(!i) {
-            mask=dm_compute_mask(size);
+            mask=dm_compute_mask64(size);
             lin=(in&mask)<<fbit;
             mask=mask<<fbit;
         }
         else {
             lin=in>>(DM_INPUT_MAX_BITS-fbit);
-            mask=dm_compute_mask(fbit);            
+            mask=dm_compute_mask64(fbit);            
         }
         if(!mask) break;
     

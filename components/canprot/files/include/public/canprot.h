@@ -35,10 +35,10 @@ typedef struct {
 extern const canprot_sig_t canprot_sig_zero;
 
 typedef struct {
-    canbus_data_t   data[CANBUS_DATA_SIZE_MAX];        // bits size in message
-    uint16_t    tick;       // tick counter in ms till 0
+    canbus_frame_t* frame;      // bits size in message
+    uint16_t    tick;           // tick counter in ms till 0
 } canprot_msg_state_t;
-#define CANPROT_MSG_STATE_ZERO { .data={0}, .tick=0 }
+#define CANPROT_MSG_STATE_ZERO { .frame={0}, .tick=0 }
 extern const canprot_msg_state_t canprot_msg_state_zero;
 
 // return 0 on success, 1 otherwise
@@ -59,6 +59,6 @@ extern int canprot_send_msg(const canprot_idx_t);
 
 extern const canprot_msg_t* canprot_msgs_decl_g[];              // all messages to manage, must end with NULL pointer
 extern const canprot_sig_t* canprot_sigs_decl_g[];              // all signals to manage, must end with NULL pointer
-extern canprot_msg_state_t canprot_msg_cur_g[];                  // all current messages state
+extern canprot_msg_state_t canprot_msg_cur_g[];                 // all current messages state
 
 #endif // __CANPROT_H__
