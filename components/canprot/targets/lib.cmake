@@ -28,8 +28,8 @@ set(LOCAL_SRC_FILES
     
     # private APIs
     canprot_set_data_value.c
-    dm_set_data_lsb.c
-    dm_set_data_msb.c
+    dm_set_data64_lsb.c
+    dm_set_data64_msb.c
     dm_compute_mask8.c
     dm_compute_mask64.c
     dm_compute_mask_shift8.c

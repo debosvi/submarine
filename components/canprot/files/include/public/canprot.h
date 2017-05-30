@@ -20,7 +20,7 @@ typedef struct {
     uint8_t bytes;          // nb bytes length (must be less or equal to CANBUS_DATA_SIZE_MAX (see canbus header file)
     uint16_t ms;            // message cycle time in ms (only valid if cycle matches mask CANPROT_MSG_CYCLE_CYCLIC
 } canprot_msg_t;
-#define CANPROT_MSG_ZERO { .id=(canbus_addr_t)-1, .type=0, .cycle=0, .ms=0, .bytes=0}
+#define CANPROT_MSG_ZERO { .id=(canbus_addr_t)-1, .type=0, .cycle=0, .ms=0, .bytes=0 }
 extern const canprot_msg_t canprot_msg_zero;
 
 typedef struct {
@@ -38,7 +38,7 @@ typedef struct {
     canbus_frame_t* frame;      // bits size in message
     uint16_t    tick;           // tick counter in ms till 0
 } canprot_msg_state_t;
-#define CANPROT_MSG_STATE_ZERO { .frame={0}, .tick=0 }
+#define CANPROT_MSG_STATE_ZERO { .frame=0, .tick=0 }
 extern const canprot_msg_state_t canprot_msg_state_zero;
 
 // return 0 on success, 1 otherwise

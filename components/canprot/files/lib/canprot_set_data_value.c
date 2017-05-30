@@ -27,7 +27,7 @@ int canprot_set_data_value(const canprot_idx_t msg_idx, const unsigned int is_de
                 }
             }            
             
-            r=dm_set_data_msb(&canprot_msg_cur_g[msg_idx].frame[0], msg->bytes*8, canprot_sigs_decl_g[s]->pos, canprot_sigs_decl_g[s]->bits, value);
+            r=dm_set_data64_msb(&canprot_msg_cur_g[msg_idx].frame[0], msg->bytes*8, canprot_sigs_decl_g[s]->pos, canprot_sigs_decl_g[s]->bits, value);
             if(r!=DM_ERR_NO_ERROR)
                 break;
                     

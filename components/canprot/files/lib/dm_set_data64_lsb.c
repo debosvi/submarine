@@ -3,7 +3,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-int dm_set_data_lsb(void* out, const uint16_t max, const uint8_t pos, const uint8_t size, const uint64_t in) {
+int dm_set_data64_lsb(void* out, const uint16_t max, const uint8_t pos, const uint8_t size, const uint64_t in) {
     uint8_t *p=0;
     uint8_t fbyte=0;
     uint8_t fbit=0;
