@@ -20,9 +20,9 @@ int dm_set_data64_lsb(void* out, const uint16_t max, const uint8_t pos, const ui
         if(t>max) return DM_ERR_OVERLAP;
     }
     
-    fbyte=pos>>3;
-    fbit=pos-(fbyte<<3);
-    p=(uint8_t*)out + ((max>>3)-1) - fbyte;            
+    fbyte=pos>>DM_MODULO_SHIFT_SHIFT;
+    fbit=pos-(fbyte<<DM_MODULO_SHIFT_SHIFT);
+    p=(uint8_t*)out + ((max>>DM_MODULO_SHIFT_SHIFT)-1) - fbyte;            
     
     while(1) {
         if(!i) {
@@ -44,8 +44,8 @@ int dm_set_data64_lsb(void* out, const uint16_t max, const uint8_t pos, const ui
             
             (*p)&=~m;
             (*p)|=v;
-            lin=lin>>8;
-            mask=mask>>8;
+            lin=lin>>DM_MODULO_SHIFT_BASIC;
+            mask=mask>>DM_MODULO_SHIFT_BASIC;
             p--;
         }
         if(i) break;        // loop 1 done, fully terminated

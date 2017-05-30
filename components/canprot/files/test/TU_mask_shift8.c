@@ -24,7 +24,6 @@ static const test_data_t data_mask_g[] = {
     { .lsb=8, .size=0, .index=0, .comp = 0 },           // correct value for 'index' and 'lsb', no size
     { .lsb=15, .size=1, .index=16, .comp = 0x00 },      // index out of range
     { .lsb=63, .size=64, .index=64, .comp = 0x00 },     // index out of range
-
  
     // iterate over all bits (1 bit) in index 0
     { .lsb=0, .size=1, .index=0, .comp = 0x01 },       // correct args
@@ -52,7 +51,6 @@ static const test_data_t data_mask_g[] = {
     { .lsb=5, .size=2, .index=0, .comp = 0x30 },       // correct args
     { .lsb=6, .size=2, .index=0, .comp = 0x60 },       // correct args
     { .lsb=7, .size=2, .index=0, .comp = 0xc0 },       // correct args
-
    
     { .lsb=8, .size=1, .index=0, .comp = 0x00 },       // 1 bit lsb in byte 1 ('index' 0)
     { .lsb=8, .size=1, .index=8, .comp = 0x01 },       // 1 bit lsb in byte 1 ('index' 1)
