@@ -1,0 +1,8 @@
+
+#include "private/canprot_p.h"
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+canprot_tosend_t canprot_tosend_frames_storage_g[CANPROT_MAX_TOSEND_FRAMES];
+canprot_tosend_t* canprot_tosend_frames_list_g[CANPROT_MAX_TOSEND_FRAMES];
+uint8_t canprot_tosend_frames_count_g = 0;

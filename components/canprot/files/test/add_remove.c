@@ -1,0 +1,93 @@
+
+#include <errno.h>
+#include <string.h>
+
+#include <skalibs/strerr2.h>
+
+#include <canprot/canprot.h>
+
+#include "private/canprot_p.h"
+// #include "restricted/canprot_r.h"
+
+const canbus_frame_t frame_invalid0 = { .dlc=9, .id=0x123456, .data={0} };
+const canbus_frame_t frame_invalid1 = { .dlc=0, .id=0x123456, .data={0} };
+const canbus_frame_t frame_valid[] = { 
+    { .dlc=3, .id=0x123456, .data={0,1,2} },
+    { .dlc=5, .id=0x123457, .data={1,2,3,4,5} },
+    { .dlc=1, .id=0x123458, .data={6} },
+    { .dlc=8, .id=0x123459, .data={2,3,4,5,6,7,8,9} },
+    { .dlc=4, .id=0x123459, .data={0} },
+};
+
+int main(void) {
+    int r=-1;
+    
+    PROG = PROG_NAME;
+    
+    // strerr_warni1x("canprot_init");
+    // if(canprot_init()) {
+        // strerr_warnwu1x("canprot_init");
+        // goto _exit;
+    // }
+    
+    {
+        register int i=0;
+        for(; i<CANPROT_MAX_TOSEND_FRAMES; i++) {
+            canprot_tosend_frames_storage_g[i] = canprot_tosend_zero;
+            canprot_tosend_frames_list_g[i] = 0;
+        }
+    }
+
+    
+    strerr_warni1x("canprot_tosend_add_frame (no frame)");
+    r=canprot_tosend_add_frame(0);
+    if(r!=1) strerr_warnw1x("canprot_tosend_add_frame should fail with (no frame)");
+    
+    strerr_warni1x("canprot_tosend_add_frame (no dlc)");
+    r=canprot_tosend_add_frame(&frame_invalid0);
+    if(r!=1) strerr_warnw1x("canprot_tosend_add_frame should fail with (no dlc)");
+    
+    strerr_warni1x("canprot_tosend_add_frame (excess dlc)");
+    r=canprot_tosend_add_frame(&frame_invalid1);
+    if(r!=1) strerr_warnw1x("canprot_tosend_add_frame should fail (excess dlc)");
+    
+    for(int i=0; i<CANPROT_MAX_TOSEND_FRAMES; i++) {
+        strerr_warni1x("canprot_tosend_add_frame");
+        r=canprot_tosend_add_frame(&frame_valid[i%4]);
+        if(r) strerr_warnwu1x("canprot_tosend_add_frame");
+        // else strerr_warnw1x("canprot_tosend_add_frame success");
+    }
+    
+    strerr_warni1x("canprot_tosend_add_frame (limit reached)");
+    r=canprot_tosend_add_frame(&frame_valid[2]);
+    if(r!=1) strerr_warnw1x("canprot_tosend_add_frame should fail (limit reached)");
+ 
+    strerr_warni1x("canprot_tosend_remove_frame idx 3");
+    r=canprot_tosend_remove_frame(3);
+    if(r) strerr_warnwu1x("canprot_tosend_remove_frame");
+ 
+    strerr_warni1x("canprot_tosend_remove_frame idx 5");
+    r=canprot_tosend_remove_frame(3);
+    if(r) strerr_warnwu1x("canprot_tosend_remove_frame");
+ 
+    strerr_warni1x("canprot_tosend_remove_frame idx 7");
+    r=canprot_tosend_remove_frame(3);
+    if(r) strerr_warnwu1x("canprot_tosend_remove_frame");
+ 
+    strerr_warni1x("canprot_tosend_remove_frame (greater than allowed)");
+    r=canprot_tosend_remove_frame(CANPROT_MAX_TOSEND_FRAMES);
+    if(r!=1) strerr_warnw1x("canprot_tosend_remove_frame (greater than allowed)");
+ 
+    strerr_warni1x("canprot_tosend_remove_frame (greater than last idx)");
+    r=canprot_tosend_remove_frame(canprot_tosend_frames_count_g);
+    if(r!=1) strerr_warnw1x("canprot_tosend_remove_frame (greater than last idx)");
+
+ 
+// _exit:
+    // strerr_warni1x("canprot_fini");
+    // if(canprot_fini()) {
+        // strerr_warnwu1x("canprot_fini");
+    // }
+    
+    return 0;
+}

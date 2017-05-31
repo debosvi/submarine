@@ -1,6 +1,8 @@
 
 #include "private/canprot_p.h"
 
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 int canprot_set_data_value(const canprot_idx_t msg_idx, const unsigned int is_def) {
     int _ret=1;
     
@@ -26,13 +28,14 @@ int canprot_set_data_value(const canprot_idx_t msg_idx, const unsigned int is_de
                 }
             }            
             
-            r=dm_set_data64_msb(&canprot_msg_cur_g[msg_idx].frame[0], msg->bytes*8, canprot_sigs_decl_g[s]->pos, canprot_sigs_decl_g[s]->bits, value);
+            r=dm_set_data64_msb(&canprot_msg_cur_g[msg_idx].frame->data[0], msg->bytes*8, canprot_sigs_decl_g[s]->pos, canprot_sigs_decl_g[s]->bits, value);
             if(r!=DM_ERR_NO_ERROR)
                 break;
                     
         }
             
         // canprot_msg_current_g[msg_idx]->data[0]
+        _ret=0;
     }
 
     return _ret;

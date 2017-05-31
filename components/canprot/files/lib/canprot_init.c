@@ -1,6 +1,8 @@
 
 #include "private/canprot_p.h"
 
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 int canprot_init(void) {
     int _ret=1;
     int nbm=0, nbs=0;
@@ -14,7 +16,17 @@ int canprot_init(void) {
     {
         register int m=0;
         for(; m<nbm; m++) {
+            canprot_msg_cur_g[m].frame->dlc=canprot_msgs_decl_g[m]->bytes;
+            canprot_msg_cur_g[m].frame->id=canprot_msgs_decl_g[m]->id;            
             canprot_set_init_value(m);
+        }
+    }
+    
+    {
+        register int i=0;
+        for(; i<CANPROT_MAX_TOSEND_FRAMES; i++) {
+            canprot_tosend_frames_storage_g[i] = canprot_tosend_zero;
+            canprot_tosend_frames_list_g[i] = 0;
         }
     }
 
