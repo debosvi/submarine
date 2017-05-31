@@ -1,6 +1,5 @@
 
 #include "private/canprot_p.h"
-#include "private/data_multiplexer.h"
 
 int canprot_set_data_value(const canprot_idx_t msg_idx, const unsigned int is_def) {
     int _ret=1;

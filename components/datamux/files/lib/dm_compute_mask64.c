@@ -1,5 +1,5 @@
 
-#include "private/data_multiplexer.h"
+#include "private/datamux_p.h"
 
 #define MAX_SIZE    (64)
 

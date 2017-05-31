@@ -3,6 +3,7 @@
 #define __CANPROT_PRIV_H__
 
 #include <canprot/canprot.h>
+#include <dm/datamux.h>
 
 // return -1 on error (limit reached), cont of message otherwise
 extern int canprot_get_msgs_count(void);

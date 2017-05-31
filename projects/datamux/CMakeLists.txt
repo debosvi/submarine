@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.0)
-project (canprot)
+project (datamux)
 
 include(project_ver.cmake)
 
@@ -21,5 +21,3 @@ if(${CYGWIN})
 endif()
 
 BOZ_COMPS_FIND_ALL("${BOZ_ALL_COMPS_DIR}/datamux")
-BOZ_COMPS_FIND_ALL("${BOZ_ALL_COMPS_DIR}/canbus")
-BOZ_COMPS_FIND_ALL("${BOZ_ALL_COMPS_DIR}/canprot")

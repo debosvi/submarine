@@ -5,7 +5,7 @@ set(COMP_SRC_PROFILE "test")
 
 ## COMP_SRC_TEST_NAME var must be set to binary name (it will be automatically prefixed with 'test_' in order to identify easly appart from oyhre binaries).
 ## mandatory
-set(COMP_SRC_TEST_NAME "canprot_TU_mask8")
+set(COMP_SRC_TEST_NAME "datamux_TU_mask_shift8")
 
 ## LOCAL_SRC_DIR_SUFFIX is the relative path prefix to append to component files directory in order to find source files to compile.
 ## optional but recommended
@@ -13,7 +13,7 @@ set(LOCAL_SRC_DIR_SUFFIX test)
 
 ## LOCAL_SRC_FILES is the list of files to compile (do not use any absolute path, automatic appending is performed by complte makefiles scheme.
 ## mandatory
-set(LOCAL_SRC_FILES TU_mask8.c)
+set(LOCAL_SRC_FILES TU_mask_shift8.c)
 
 ## LOCAL_SRC_FILES_ADDED is the list of files to compile with absolute path (useful if generated files are somewhere).
 ## optional
@@ -27,7 +27,7 @@ set(LOCAL_SRC_FILES TU_mask8.c)
 ## COMP_SRC_LIB_DEPS_STATIC is the list of static library dependencies (internal dependencies only).
 ## Be careful about system compatibility between static and shared libraries
 ## optional
-set(COMP_SRC_LIB_DEPS_STATIC canprot)
+set(COMP_SRC_LIB_DEPS_STATIC datamux)
 
 ## COMP_SRC_LIB_DEPS_SHARED is the list of shared library dependencies (internal dependencies only).
 ## Be careful about system compatibility between static and shared libraries.

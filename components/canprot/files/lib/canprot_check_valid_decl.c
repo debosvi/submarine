@@ -2,6 +2,8 @@
 #include "private/canprot_p.h"
 #include "restricted/canprot_r.h"
 
+#define MAX_BITS_BYTES (8)
+
 int canprot_check_valid_decl(void) {
     int _ret=1;
     
@@ -15,7 +17,7 @@ int canprot_check_valid_decl(void) {
     {
         register int c=0;
         for(; c<canprot_get_sigs_count(); c++) {
-            if((canprot_sigs_decl_g[c]->bits)>(8*canprot_sigs_decl_g[c]->sz_val)) goto _exit;
+            if((canprot_sigs_decl_g[c]->bits)>(MAX_BITS_BYTES*canprot_sigs_decl_g[c]->sz_val)) goto _exit;
         }
     }
     
@@ -31,7 +33,7 @@ int canprot_check_valid_decl(void) {
                 }
             }
             
-            if(sum>8*canprot_msgs_decl_g[m]->bytes) 
+            if(sum>MAX_BITS_BYTES*canprot_msgs_decl_g[m]->bytes) 
                 goto _exit;
         }
     }
