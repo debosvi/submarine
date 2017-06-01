@@ -1,25 +1,34 @@
 
-#include <string.h>
 #include "private/canprot_p.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-int canprot_tosend_remove_frame(const unsigned int list_idx) {
+int canprot_tosend_remove_frame(const unsigned int idx) {
     int _ret=1;
-    register unsigned int idx=0;
+    register unsigned int i=0;
+    register unsigned int sav=0;
     
-    if(!canprot_tosend_frames_count_g) goto _exit;
-    if(list_idx>(unsigned int)(canprot_tosend_frames_count_g-1)) goto _exit;    
-    if(list_idx>CANPROT_MAX_TOSEND_FRAMES) goto _exit;    
-    idx = canprot_tosend_frames_list_g[list_idx]->idx;
-    if(idx>CANPROT_MAX_TOSEND_FRAMES) goto _exit;
-       
-    if(canprot_tosend_frames_count_g>1) {
-        int sz=canprot_tosend_frames_count_g-idx-1;
-        memcpy(&canprot_tosend_frames_list_g[list_idx], &canprot_tosend_frames_list_g[list_idx+1], sz*sizeof(canprot_tosend_t*));
+    if(!canprot_tosend_run_g.count) goto _exit;
+    if(idx>=CANPROT_MAX_TOSEND_FRAMES) goto _exit;    
+    if(canprot_tosend_frames_storage_g[idx].order==CANPROT_TOSEND_INVALID_ORDER) goto _exit;
+    
+    canprot_tosend_frames_storage_g[idx]=canprot_tosend_zero;
+    canprot_tosend_run_g.count--;
+    
+    if(canprot_tosend_run_g.next==idx) {
+        register unsigned int current=0;
+        unsigned int min_order=(unsigned int)CANPROT_TOSEND_INVALID_ORDER ;  
+        // canprot_tosend_run_g.next=0;
+        for(; i<CANPROT_MAX_TOSEND_FRAMES; i++) {
+            current=canprot_tosend_frames_storage_g[i].order;
+            if( (current!=(unsigned int)CANPROT_TOSEND_INVALID_ORDER) && 
+                (current<min_order) ){
+                min_order=current;
+                sav=i;
+            }        
+        }
+        canprot_tosend_run_g.next=sav;
     }
-    canprot_tosend_frames_count_g--;
-    canprot_tosend_frames_list_g[canprot_tosend_frames_count_g]=0;    
     
     // all is okay
     _ret=0;

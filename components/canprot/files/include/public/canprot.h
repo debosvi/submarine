@@ -53,7 +53,11 @@ extern int canprot_set_init_value(const canprot_idx_t msg_idx);
 // return 0 on success, 1 otherwise
 extern int canprot_set_signal_value(const canprot_idx_t sig_idx, const canbus_data_t* value);
 // return 0 on success, 1 otherwise
-extern int canprot_send_msg(const canprot_idx_t);
+extern int canprot_tosend_has_frame(void);
+// return existing frame ptr on success, 0 otherwise
+extern canbus_frame_t* canprot_tosend_get_next(void);
+// return existing frame ptr on success, 0 otherwise
+extern int canprot_tosend_remove_next(void);
 
 // application specific file part
 

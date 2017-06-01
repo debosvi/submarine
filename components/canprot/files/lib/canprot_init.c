@@ -26,7 +26,6 @@ int canprot_init(void) {
         register int i=0;
         for(; i<CANPROT_MAX_TOSEND_FRAMES; i++) {
             canprot_tosend_frames_storage_g[i] = canprot_tosend_zero;
-            canprot_tosend_frames_list_g[i] = 0;
         }
     }
 

@@ -3,5 +3,6 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-canprot_tosend_t canprot_tosend_frames_storage_g[CANPROT_MAX_TOSEND_FRAMES];
-canprot_tosend_run_t canprot_tosend_run_g = CANPROT_TOSEND_RUN_ZERO;
+int canprot_tosend_has_frame(void) {
+    return (canprot_tosend_run_g.count?1:0);
+}

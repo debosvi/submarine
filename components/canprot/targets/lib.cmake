@@ -31,6 +31,9 @@ set(LOCAL_SRC_FILES
     canprot_tosend_p.c
     canprot_tosend_add_frame.c
     canprot_tosend_remove_frame.c  
+    canprot_tosend_has_frame.c
+    canprot_tosend_get_next.c
+    canprot_tosend_remove_next.c
 )
 
 ## LOCAL_SRC_FILES_ADDED is the list of files to compile with absolute path (useful if generated files are somewhere).
