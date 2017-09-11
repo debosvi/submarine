@@ -1,3 +1,7 @@
 #!/command/execlineb -P
+
+s6-envdir env
+importas -u PROCNAME PROCNAME
+
 fdmove -c 2 1
-bdp_prog
+./$PROCNAME

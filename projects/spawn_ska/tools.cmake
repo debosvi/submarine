@@ -1,5 +1,7 @@
 
-include_directories($ENV{HOME}/usr/include)
+set(BASE_DIR $ENV{HOME}/skaware)
 
-link_directories($ENV{HOME}/usr/lib)
-link_directories($ENV{HOME}/usr/lib/skalibs)
+include_directories(${BASE_DIR}/usr/include)
+
+link_directories(${BASE_DIR}/usr/lib)
+# link_directories(${BASE_DIR}/usr/lib/skalibs)

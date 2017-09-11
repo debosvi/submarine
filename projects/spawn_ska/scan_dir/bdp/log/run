@@ -1,4 +1,4 @@
 #!/command/execlineb -P
 exec -c
-s6-log T s1000000 n20 /tmp/bdplogd
+s6-log T s1000000 n20 /tmp/subm/bdp
 

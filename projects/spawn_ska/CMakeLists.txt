@@ -21,5 +21,7 @@ add_definitions(-DBOZ_ALL_COMPS_DIR=${BOZ_ALL_COMPS_DIR})
 if(${CYGWIN})
     add_definitions(-D__USE_CANUDP)
 endif()
+
+set(CMAKE_EXE_LINKER_FLAGS "-static")
+
 BOZ_COMPS_FIND_ALL("${BOZ_ALL_COMPS_DIR}/spawn")
-BOZ_COMPS_FIND_ALL("${BOZ_ALL_COMPS_DIR}/canbus")

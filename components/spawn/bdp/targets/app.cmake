@@ -15,13 +15,13 @@ set(LOCAL_SRC_DIR_SUFFIX app)
 ## mandatory
 set(LOCAL_SRC_FILES 
     main.c
-    canbus.c
+#     canbus.c
     )
 
 ## LOCAL_SRC_FILES_ADDED is the list of files to compile with absolute path (useful if generated files are somewhere).
 ## optional
 set(LOCAL_SRC_FILES_ADDED 
-    ${BOZ_ALL_COMPS_DIR}/spawn/eqpt/files/lib/main.c
+#     ${BOZ_ALL_COMPS_DIR}/spawn/eqpt/files/lib/main.c
 )
 
 ## COMP_SRC_LIB_DEPS is the list of library dependencies (internal dependencies only).
@@ -32,7 +32,7 @@ set(LOCAL_SRC_FILES_ADDED
 ## COMP_SRC_LIB_DEPS_STATIC is the list of static library dependencies (internal dependencies only).
 ## Be careful about system compatibility between static and shared libraries
 ## optional
-set(COMP_SRC_LIB_DEPS_STATIC canbus)
+# set(COMP_SRC_LIB_DEPS_STATIC skarnet)
 
 ## COMP_SRC_LIB_DEPS_SHARED is the list of shared library dependencies (internal dependencies only).
 ## Be careful about system compatibility between static and shared libraries.
