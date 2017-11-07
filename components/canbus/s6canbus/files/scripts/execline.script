@@ -1,0 +1,14 @@
+#!execlineb -P
+
+s6-env -i PATH=/home/vincent/cross/gcc-i486-linux-musl/bin
+s6-env FORCE_CANFD=1
+
+if { s6-echo "Open socketcan device to work on!!" }
+
+s6canbus-opendev -d vcan1
+s6canbus-loopback
+s6canbus-notmine
+s6canbus-showenvs
+s6canbus-showfds
+
+s6-echo "end"
