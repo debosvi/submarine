@@ -15,3 +15,4 @@ include($ENV{SUBMARINE_PROJECT_DIR}/components/tools/ext-build/cmake/boz-build.c
 include(tools.cmake)
 
 BOZ_COMPS_FIND_ALL("$ENV{SUBMARINE_PROJECT_DIR}/components/canbus/s6canbus")
+BOZ_COMPS_FIND_ALL("$ENV{SUBMARINE_PROJECT_DIR}/components/misc/tools")

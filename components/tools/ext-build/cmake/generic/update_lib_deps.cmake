@@ -29,6 +29,11 @@ if(NOT "${COMP_SRC_LIB_DEPS}" STREQUAL "" AND "${COMP_SRC_DEPS_PREFERRED}" STREQ
     set(COMP_SRC_DEPS_PREFERRED ${DEFAULT_LINK})
 endif()
 
+if(LOCAL_BUILD_STATIC)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
+    set(CMAKE_SKIP_RPATH ON)
+endif()
+
 if("${COMP_SRC_DEPS_PREFERRED}" STREQUAL "static")
     list(APPEND LOCAL_LIB_DEPS_STATIC ${COMP_SRC_LIB_DEPS})
 elseif("${COMP_SRC_DEPS_PREFERRED}" STREQUAL "shared")
@@ -57,3 +62,10 @@ elseif(DO_GENERATE_APP)
 elseif(DO_GENERATE_TEST)
     message(STATUS "List of updated dependencies for test ${COMP_SRC_TEST_NAME}: ${UPDATED_LIB_DEPS}")
 endif()
+
+if(PRELOAD_S6 AND DO_GENERATE_APP)
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-wrap=socket -Wl,-wrap=bind -Wl,-wrap=ioctl -Wl,-wrap=setsockopt")
+	list(APPEND UPDATED_LIB_DEPS lib_s6preload_static)
+endif()
+
+

@@ -52,7 +52,7 @@ int main (int argc, char const *const *argv, char const *const *envp) {
         memcpy(fmt+n, "CANBUSFD=", 9) ; n += 9 ;
         n += uint32_fmt(fmt+n, cfd) ; fmt[n++] = 0 ;
         
-        pathexec_r(argv, envp, env_len(envp), fmt, n) ;
+        xpathexec_r(argv, envp, env_len(envp), fmt, n) ;
     }
 }
 

@@ -30,7 +30,7 @@ macro (BOZ_COMP_FIND_APIS dir)
             message(STATUS "Not any public API found in ${dir}")
         endif()       
     else()
-        message(SEND_ERROR "Unable to find public API directory in ${dir}")
+        message(WARNING "Unable to find public API directory in ${dir}")
     endif()
     
     ## find RESTRICTED include dir

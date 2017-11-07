@@ -1,5 +1,9 @@
 
-include_directories($ENV{HOME}/cross/native/include)
+include_directories(${CMAKE_SYSROOT}/include)
 
-link_directories($ENV{HOME}/cross/native/lib)
-link_directories($ENV{HOME}/cross/native/lib/skalibs)
+link_directories(${CMAKE_SYSROOT}/lib)
+link_directories(${CMAKE_SYSROOT}/lib/skalibs)
+
+if(${USE_MUSL})
+    set(PRELOAD_S6 ON)
+endif()

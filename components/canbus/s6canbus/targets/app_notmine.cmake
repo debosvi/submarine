@@ -37,4 +37,6 @@ set(COMP_SRC_LIB_DEPS_STATIC s6canbus)
 
 ## COMP_EXT_LIB_DEPS is the list of external library dependencies.
 ## optional
-set(COMP_EXT_LIB_DEPS libskarnet.a)
+set(COMP_EXT_LIB_DEPS skarnet)
+
+set(LOCAL_BUILD_STATIC ON)
