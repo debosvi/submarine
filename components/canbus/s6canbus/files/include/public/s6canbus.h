@@ -14,5 +14,6 @@ typedef enum {
 extern int s6canbus_open(const char* const dev);
 extern int s6canbus_set_loopback(const int fd, const s6canbus_flag_t flag);
 extern int s6canbus_set_notmine(const int fd, const s6canbus_flag_t flag);
+extern int s6canbus_get_openfd(void);
 
 #endif

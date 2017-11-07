@@ -2,12 +2,13 @@
 
 #include <skalibs/sysdeps.h>
 #include <skalibs/nonposix.h>
+
 #include <string.h>
 #include <sys/socket.h>
 #include <linux/can.h>
 #include <linux/can/raw.h>
 
-#include <s6canbus/s6canbus.h>
+#include <private/s6canbus_p.h>
 
 int s6canbus_set_loopback(const int fd, const s6canbus_flag_t flag) {
     int loopback = 0; /* 0 = disabled (default), 1 = enabled */

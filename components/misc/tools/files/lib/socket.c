@@ -1,11 +1,11 @@
 /* ISC license. */
 
 #define _GNU_SOURCE
-#include <stdio.h>
-#include <string.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
+// #include <stdio.h>
+// #include <string.h>
+// 
+// #include <sys/types.h>
+// #include <sys/stat.h>
 #include <fcntl.h>
 
 #include <net/if.h>
@@ -14,7 +14,9 @@
 
 #include <skalibs/strerr2.h>
 
-ssize_t __real_socket(int domain, int type, int protocol);
+#include <private/s6sys_wrapper_p.h>
+
+extern ssize_t __real_socket(int domain, int type, int protocol);
 
 int __wrap_socket(int domain, int type, int protocol) {
     strerr_warni1x("wrap 'socket' syscall");

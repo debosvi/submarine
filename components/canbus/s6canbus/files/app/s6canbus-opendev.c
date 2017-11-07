@@ -3,11 +3,13 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <limits.h>
+
 #include <skalibs/types.h>
 #include <skalibs/sgetopt.h>
 #include <skalibs/strerr2.h>
 #include <skalibs/djbunix.h>
 #include <skalibs/fmtscan.h>
+#include <skalibs/environ.h>
 
 #include <s6canbus/s6canbus.h>
 
@@ -23,6 +25,7 @@ int main (int argc, char const *const *argv, char const *const *envp) {
     int cfd=-1;
 
     PROG = "s6canbus-opendev" ;
+    environ=(char**)envp;
 
     {
         subgetopt_t l = SUBGETOPT_ZERO ;
@@ -45,7 +48,11 @@ int main (int argc, char const *const *argv, char const *const *envp) {
     cfd=s6canbus_open(dev);
     if (cfd<0) strerr_diefu2sys(111, "open CAN device: ", dev) ;
 
-        
+    if(env_get("FORCE_CANFD")) {
+        dup2(cfd, 50);
+        cfd=50;
+    }
+    
     {
         char fmt[64] = "" ;
         size_t n = 0 ;

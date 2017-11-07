@@ -18,9 +18,11 @@ set(LOCAL_SRC_DIR_SUFFIX lib)
 ## LOCAL_SRC_FILES is the list of files to compile (do not use any absolute path, automatic appending is performed by complete makefiles scheme.
 ## mandatory
 set(LOCAL_SRC_FILES 
+    s6canbus_fdstr.c
     s6canbus_open.c
     s6canbus_set_loopback.c
     s6canbus_set_notmine.c
+    s6canbus_get_openfd.c
 )
 
 ## LOCAL_SRC_FILES_ADDED is the list of files to compile with absolute path (useful if generated files are somewhere).
