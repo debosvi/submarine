@@ -1,6 +1,13 @@
 set(CMAKE_SYSTEM_NAME Linux)
 
-set(CMAKE_SYSROOT /home/vincent/cross/gcc-i486-linux-musl/)
+if("${GCC_PREFIX}" STREQUAL "")
+        message(STATUS "Use GCC_PREFIX")
+        set(GCC_PREFIX $ENV{JENKINS_HOME}/workspace)
+endif()
+
+message(STATUS "PREFIX: ${GCC_PREFIX}")
+
+set(CMAKE_SYSROOT ${GCC_PREFIX}/cross/i486-linux-musl/)
 set(CMAKE_STAGING_PREFIX /home/devel/stage)
 
 set(CMAKE_C_COMPILER ${CMAKE_SYSROOT}/bin/i486-linux-musl-gcc)
