@@ -1,3 +1,6 @@
+# kde
+.directory
+
 # cmake stuffs
 CMakeCache.txt
 CMakeFiles
@@ -9,6 +12,8 @@ CTestTestfile.cmake
 #project specific
 build/
 dl/
+new_comp*
+*.tmpl
 
 # temp file
 *~
