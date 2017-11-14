@@ -1,8 +1,9 @@
 /* ISC license. */
-
+/*
 #include <sys/types.h>
 #include <unistd.h>
-#include <limits.h>
+#include <limits.h>*/
+
 #include <skalibs/types.h>
 #include <skalibs/sgetopt.h>
 #include <skalibs/strerr2.h>
@@ -11,7 +12,7 @@
 
 #include <s6canbus/s6canbus.h>
 
-#define USAGE "s6canbus-notmine [ -v verbosity ] [ -e ] prog..."
+#define USAGE "s6canbus-notmine [-v verbosity] [-e] prog..."
 #define dieusage() strerr_dieusage(100, USAGE)
 
 int main (int argc, char const *const *argv, char const *const *envp) {

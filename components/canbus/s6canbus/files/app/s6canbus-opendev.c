@@ -1,19 +1,16 @@
 /* ISC license. */
 
-#include <sys/types.h>
-#include <unistd.h>
-#include <limits.h>
+#include <unistd.h> // dup2
 
 #include <skalibs/types.h>
 #include <skalibs/sgetopt.h>
 #include <skalibs/strerr2.h>
 #include <skalibs/djbunix.h>
-#include <skalibs/fmtscan.h>
 #include <skalibs/environ.h>
 
 #include <s6canbus/s6canbus.h>
 
-#define USAGE "s6canbus-opendev [ -v verbosity ] [-d device ] -n prog..."
+#define USAGE "s6canbus-opendev [-v verbosity] [-d device] [-n] prog..."
 #define dieusage() strerr_dieusage(100, USAGE)
 
 const char* default_device_name = "can0";
