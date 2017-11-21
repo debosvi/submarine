@@ -1,5 +1,10 @@
 
-include_directories(${CMAKE_SYSROOT}/include)
+if("${CROSS_SYSROOT}" STREQUAL "")
+	message(STATUS "Use CMAKE_SYSROOT: ${CMAKE_SYSROOT}")
+	set(CROSS_SYSROOT ${CMAKE_SYSROOT})
+endif()
 
-link_directories(${CMAKE_SYSROOT}/lib)
-link_directories(${CMAKE_SYSROOT}/lib/skalibs)
+include_directories(${CROSS_SYSROOT}/include)
+
+link_directories(${CROSS_SYSROOT}/lib)
+link_directories(${CROSS_SYSROOT}/lib/skalibs)

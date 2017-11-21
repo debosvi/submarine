@@ -16,8 +16,12 @@ typedef struct {
 #define S6CANMSG_BUF_ZERO   { .x=0, .p=0, .n=0 }
 extern const s6canmsg_buf_t s6canmsg_buf_zero;
 
+#define S6CANMSG_BUF_INIT(x)  { .x=x, .p=0, .n=0 }
+
 int s6canmsg_init_buf(s6canmsg_buf_t* const b, const char* const buf, const size_t n);
 int s6canmsg_get_next(s6canmsg_buf_t* const b, char* const buf, const size_t n);
 int s6canmsg_ack_current(s6canmsg_buf_t* const b, const size_t n);
+
+#define S6CANMSG_HAS_DATA(b)	((b)->p<(b)->n)
 
 #endif // __S6CANMSG_H__

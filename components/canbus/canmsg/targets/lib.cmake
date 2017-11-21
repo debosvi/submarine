@@ -18,6 +18,7 @@ set(LOCAL_SRC_DIR_SUFFIX lib)
 ## LOCAL_SRC_FILES is the list of files to compile (do not use any absolute path, automatic appending is performed by complete makefiles scheme.
 ## mandatory
 set(LOCAL_SRC_FILES 
+    s6canmsg_buf_zero.c
     s6canmsg_init_buf.c
     s6canmsg_get_next.c
     s6canmsg_ack_current.c

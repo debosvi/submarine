@@ -27,7 +27,10 @@ set(LOCAL_SRC_FILES rx_tx_sample.c)
 ## COMP_SRC_LIB_DEPS_STATIC is the list of static library dependencies (internal dependencies only).
 ## Be careful about system compatibility between static and shared libraries
 ## optional
-set(COMP_SRC_LIB_DEPS_STATIC s6canbus)
+set(COMP_SRC_LIB_DEPS_STATIC 
+    s6canbus
+    s6canmsg
+)
 
 ## COMP_SRC_LIB_DEPS_SHARED is the list of shared library dependencies (internal dependencies only).
 ## Be careful about system compatibility between static and shared libraries.
