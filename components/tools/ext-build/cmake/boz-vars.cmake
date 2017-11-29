@@ -56,6 +56,7 @@ endif()
 
 add_definitions(-std=c99)
 add_definitions(-Wall  -Wextra)
+add_definitions(-D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700)
 
 set(CMAKE_C_FLAGS_DEBUG "-O0 -ggdb")
 set(CMAKE_C_FLAGS_RELEASE "-O2 -Werror")
