@@ -3,7 +3,7 @@
 #include <skalibs/env.h>
 #include <skalibs/uint32.h>
 
-#include <private/s6canbus_p.h>
+#include <private/canbus_p.h>
 
 int s6canbus_get_openfd(void) {
     int fd=-1;

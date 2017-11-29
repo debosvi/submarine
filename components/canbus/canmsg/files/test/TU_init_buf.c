@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include <s6canbus/s6canmsg.h>
+#include <s6canbus/canmsg.h>
 
 #define BASIC_LENGTH   (8)
 #define S6CANMSG_MSG1_LENGTH   (47)

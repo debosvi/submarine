@@ -3,7 +3,7 @@
 #ifndef S6CANBUS_PRIVATE_H
 #define S6CANBUS_PRIVATE_H
 
-#include <s6canbus/s6canbus.h>
+#include <s6canbus/canbus.h>
 
 extern const char *s6canbus_fdstr;
 

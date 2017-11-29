@@ -11,7 +11,7 @@
 #include <linux/can.h>
 #include <linux/can/raw.h>
 
-#include <private/s6canbus_p.h>
+#include <private/canbus_p.h>
 
 int s6canbus_open(const char* const dev) {
     int s=socket(PF_CAN, SOCK_RAW, CAN_RAW);

@@ -1,5 +1,5 @@
 
-#include <s6canbus/s6canmsg.h>
+#include <s6canbus/canmsg.h>
 
 #include <skalibs/bytestr.h>
 

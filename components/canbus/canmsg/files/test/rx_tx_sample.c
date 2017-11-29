@@ -16,7 +16,6 @@
 #include <skalibs/iopause.h>
 
 #include <s6canbus/s6canbus.h>
-#include <s6canbus/s6canmsg.h>
 
 #define USAGE "sample_rx_tx [-v verbosity] [-r]"
 #define dieusage() strerr_dieusage(100, USAGE)
@@ -75,7 +74,7 @@ int main (int argc, char const *const *argv, char const *const *envp) {
 
     { 
         tain_t deadline = TAIN_ZERO;
-        const tain_t tto = { .sec=0, .nano=450*1000*1000 };
+        const tain_t tto = { .sec=TAI_ZERO, .nano=450*1000*1000 };
         struct canfd_frame frame;
         iopause_fd x[1]= { { .fd=cfd, .events=0, .revents=0 } };
         register int r;

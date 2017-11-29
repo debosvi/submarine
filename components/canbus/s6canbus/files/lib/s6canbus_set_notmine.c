@@ -8,7 +8,7 @@
 #include <linux/can.h>
 #include <linux/can/raw.h>
 
-#include <private/s6canbus_p.h>
+#include <private/canbus_p.h>
 
 int s6canbus_set_notmine(const int fd, const s6canbus_flag_t flag) {
     int recv_own_msgs = 0; /* 0 = disabled (default), 1 = enabled */
