@@ -2,7 +2,7 @@
 
 #include <private/fillbuf_p.h>
 
-int s6cb_fillbuf_find_id(const s6canbus_id_t id) {
+int priv_s6cb_fillbuf_find_id(const s6canbus_id_t id) {
     int _ret=-1;
     unsigned i=0;
     while(i<(unsigned)s6cb_fillbuf_storage_data.n) {

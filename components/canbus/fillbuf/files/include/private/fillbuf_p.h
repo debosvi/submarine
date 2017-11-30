@@ -8,7 +8,7 @@
 
 typedef struct {
     s6canbus_id_t id;
-    char* buf;
+    void* buf;
     size_t size;
 } s6cb_fillbuf_data_t;
 
@@ -25,6 +25,6 @@ extern s6cb_fillbuf_storage_t s6cb_fillbuf_storage_zero;
 extern s6cb_fillbuf_storage_t s6cb_fillbuf_storage_data;
 
 // private functions
-int s6cb_fillbuf_find_id(const s6canbus_id_t id);
+int priv_s6cb_fillbuf_find_id(const s6canbus_id_t id);
 
 #endif // __S6CANBUS_FILLBUF_PRIVATE_H__

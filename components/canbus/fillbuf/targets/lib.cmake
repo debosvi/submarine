@@ -18,12 +18,13 @@ set(LOCAL_SRC_DIR_SUFFIX lib)
 ## LOCAL_SRC_FILES is the list of files to compile (do not use any absolute path, automatic appending is performed by complete makefiles scheme.
 ## mandatory
 set(LOCAL_SRC_FILES 
+    priv_s6cb_fillbuf_find_id.c
+
     s6cb_fillbuf_data_zero.c
     s6cb_fillbuf_storage_zero.c
     s6cb_fillbuf_storage_data.c
     s6cb_fillbuf_init.c
     s6cb_fillbuf_fini.c
-    s6cb_fillbuf_find_id.c
     
     s6cb_fillbuf_register_id.c
     s6cb_fillbuf_unregister_id.c
