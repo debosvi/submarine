@@ -1,5 +1,5 @@
 #.rst:
-# FindCurses
+# FindSkalibs
 # ----------
 #
 # Find the skalibs include file and library.

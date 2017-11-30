@@ -12,10 +12,14 @@
 static int init_suite_success(void) { return 0; }
 static int clean_suite_success(void) { return 0; }
 
+static void test_valid_defines(void) { 
+    CU_ASSERT(S6CANBUS_FILLBUF_MAX_IDS>2); 
+}
+
 static void test_init(void) {
     int r=0;
     int i=0;
-   
+
     r=s6cb_fillbuf_init();
     CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_NONE);
     
@@ -66,9 +70,10 @@ int main(void) {
     }
 
     /* add the tests to the suite */
-    if( (NULL == CU_add_test(pSuite, "Test s6cb_fillbuf_init", test_init)) ||
+    if( (NULL == CU_add_test(pSuite, "Test valid defines", test_valid_defines)) ||
+        (NULL == CU_add_test(pSuite, "Test s6cb_fillbuf_init", test_init)) ||
         (NULL == CU_add_test(pSuite, "Test s6cb_fillbuf_fini", test_fini))
-       ) {
+        ) {
         CU_cleanup_registry();
         return CU_get_error();
     }

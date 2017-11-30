@@ -20,8 +20,12 @@ char msg2[MSG2_SIZE];
 static int init_suite(void) { s6cb_fillbuf_init(); return 0; }
 static int clean_suite(void) { s6cb_fillbuf_fini(); return 0; }
 
+static void test_valid_defines(void) { 
+    CU_ASSERT(S6CANBUS_FILLBUF_MAX_IDS>2); 
+}
+    
 static void test_register(void) {
-    int r=0;
+        int r=0;
     s6cb_fillbuf_data_t *p=0;
     
     // insert id1
@@ -30,7 +34,7 @@ static void test_register(void) {
     
     // check nb ids 
     CU_ASSERT_EQUAL(s6cb_fillbuf_storage_data.n, 1);
-   
+    
     // check 1st element
     p=&s6cb_fillbuf_storage_data.d[0];
     CU_ASSERT_EQUAL(p->id, id1);
@@ -43,7 +47,7 @@ static void test_register(void) {
     
     // check nb ids 
     CU_ASSERT_EQUAL(s6cb_fillbuf_storage_data.n, 2);
-   
+    
     // check 2nd element
     p=&s6cb_fillbuf_storage_data.d[1];
     CU_ASSERT_EQUAL(p->id, id2);
@@ -68,7 +72,7 @@ static void test_unregister(void) {
     // remove id1
     r=s6cb_fillbuf_unregister_id(id1);
     CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_NONE);
-
+    
     // check nb ids 
     CU_ASSERT_EQUAL(s6cb_fillbuf_storage_data.n, 1);
     
@@ -76,21 +80,64 @@ static void test_unregister(void) {
     r=s6cb_fillbuf_unregister_id(id1);
     CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_NOTFOUND);
     CU_ASSERT_NOT_EQUAL(r, S6CANBUS_ERROR_NONE);
-
+    
     // check nb ids 
     CU_ASSERT_EQUAL(s6cb_fillbuf_storage_data.n, 1);
-   
+    
     // check 1st element
     p=&s6cb_fillbuf_storage_data.d[0];
     CU_ASSERT_EQUAL(p->id, id2);
     CU_ASSERT_EQUAL(p->buf, msg2);
     CU_ASSERT_EQUAL(p->size, MSG2_SIZE);
-   
+    
     // check 2nd element
     p=&s6cb_fillbuf_storage_data.d[1];
     CU_ASSERT_EQUAL(p->id, S6CANBUS_ID_INVALID);
     CU_ASSERT_EQUAL(p->buf, 0);
     CU_ASSERT_EQUAL(p->size, 0);
+}
+
+static void test_register_limits(void) {
+    int r=0;
+    int i=0;
+    s6cb_fillbuf_data_t *p=0;
+    
+    for(; i<S6CANBUS_FILLBUF_MAX_IDS; i++) {
+        // insert id1 + i
+        r=s6cb_fillbuf_register_id(id1+i, msg1, MSG1_SIZE+i);
+        CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_NONE);
+    
+        // check nb ids 
+        CU_ASSERT_EQUAL(s6cb_fillbuf_storage_data.n, i+1);
+    
+        // check 1st element
+        p=&s6cb_fillbuf_storage_data.d[i];
+        CU_ASSERT_EQUAL(p->id, id1+i);
+        CU_ASSERT_EQUAL(p->buf, msg1);
+        CU_ASSERT_EQUAL(p->size, MSG1_SIZE+i);
+    }
+    
+    r=s6cb_fillbuf_register_id(id1+i, msg1, MSG1_SIZE+i);
+    CU_ASSERT_NOT_EQUAL(r, S6CANBUS_ERROR_NONE);
+    CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_FULL);    
+}
+
+static void test_unregister_limits(void) {
+    int r=0;
+    int i=0;
+    
+    for(; i<S6CANBUS_FILLBUF_MAX_IDS; i++) {
+        // remove id1 + i
+        r=s6cb_fillbuf_unregister_id(id1+i);
+        CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_NONE);
+        
+        // check nb ids 
+        CU_ASSERT_EQUAL(s6cb_fillbuf_storage_data.n, S6CANBUS_FILLBUF_MAX_IDS-1-i);
+    }
+    
+    r=s6cb_fillbuf_unregister_id(id1+i);
+    CU_ASSERT_NOT_EQUAL(r, S6CANBUS_ERROR_NONE);
+    CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_EMPTY);    
 }
 
 int main(void) {
@@ -100,24 +147,40 @@ int main(void) {
     /* initialize the CUnit test registry */
     if (CUE_SUCCESS != CU_initialize_registry())
         return CU_get_error();
-
+    
     /* add a suite to the registry */
-    pSuite = CU_add_suite("'register' and 'unregister'", init_suite, clean_suite);
+    pSuite = CU_add_suite("'register' and 'unregister basic'", init_suite, clean_suite);
     if (NULL == pSuite) {
         CU_cleanup_registry();
         return CU_get_error();
     }
-
-#if 1
+    
     /* add the tests to the suite */
-    if( (NULL == CU_add_test(pSuite, "Test s6cb_fillbuf_register_id", test_register)) ||
+    if( (NULL == CU_add_test(pSuite, "Test valid defines", test_valid_defines)) ||
+        (NULL == CU_add_test(pSuite, "Test s6cb_fillbuf_register_id", test_register)) ||
         (NULL == CU_add_test(pSuite, "Test s6cb_fillbuf_unregister_id", test_unregister))
-       ) {
+    ) {
         CU_cleanup_registry();
         return CU_get_error();
     }
-#endif
-
+    
+    /* add a suite to the registry */
+    pSuite = CU_add_suite("'register' and 'unregister limits'", init_suite, clean_suite);
+    if (NULL == pSuite) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+    
+    fprintf(stderr, "S6CANBUS_FILLBUF_MAX_IDS is set to (%d)\n", S6CANBUS_FILLBUF_MAX_IDS);
+    
+    /* add the tests to the suite */
+    if( (NULL == CU_add_test(pSuite, "Test s6cb_fillbuf_register_id limits", test_register_limits)) ||
+        (NULL == CU_add_test(pSuite, "Test s6cb_fillbuf_unregister_id limits", test_unregister_limits))
+    ) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+    
     /* Run all tests using the automated interface */
     CU_set_output_filename("TU_fillbuf_register_unregister");
     CU_automated_run_tests();
