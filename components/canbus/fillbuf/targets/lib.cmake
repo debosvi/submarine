@@ -28,6 +28,7 @@ set(LOCAL_SRC_FILES
     s6cb_fillbuf_register_id.c
     s6cb_fillbuf_unregister_id.c
     s6cb_fillbuf_reset_id.c
+    s6cb_fillbuf_fill_id.c
 )
 
 ## LOCAL_SRC_FILES_ADDED is the list of files to compile with absolute path (useful if generated files are somewhere).

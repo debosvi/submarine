@@ -12,7 +12,7 @@ typedef struct {
     size_t size;
 } s6cb_fillbuf_data_t;
 
-#define S6CB_FILLBUF_DATA_ZERO   { .id=((s6canbus_id_t)-1), .buf=0, .size=0 }
+#define S6CB_FILLBUF_DATA_ZERO   { .id=S6CANBUS_ID_INVALID, .buf=0, .size=0 }
 extern s6cb_fillbuf_data_t s6cb_fillbuf_data_zero;
 
 typedef struct {
@@ -20,7 +20,7 @@ typedef struct {
     s6cb_fillbuf_data_t d[S6CANBUS_FILLBUF_MAX_IDS];
 } s6cb_fillbuf_storage_t;
 
-#define S6CB_FILLBUF_STORAGE_ZERO   { .n=0, .d={S6CB_FILLBUF_DATA_ZERO} }
+#define S6CB_FILLBUF_STORAGE_ZERO   { .n=0, .d={[0 ... S6CANBUS_FILLBUF_MAX_IDS-1]=S6CB_FILLBUF_DATA_ZERO} }
 extern s6cb_fillbuf_storage_t s6cb_fillbuf_storage_zero;
 extern s6cb_fillbuf_storage_t s6cb_fillbuf_storage_data;
 
