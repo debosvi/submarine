@@ -12,6 +12,7 @@
 
 int s6cb_fillbuf_init(void);
 int s6cb_fillbuf_fini(void);
+#define s6cb_fillbuf_reset_all s6cb_fillbuf_init
 int s6cb_fillbuf_register_id(const s6canbus_id_t id, const void* const buf, size_t size);
 int s6cb_fillbuf_unregister_id(const s6canbus_id_t id);
 int s6cb_fillbuf_reset_id(const s6canbus_id_t id);

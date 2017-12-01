@@ -17,6 +17,7 @@ static int init_suite(void) {
     s6cb_fillbuf_init(); 
     s6cb_fillbuf_register_id(id1, msg1, MSG1_SIZE); 
     memset(msg1, 0, MSG1_SIZE);
+    s6cb_fillbuf_reset_id(id1); 
     return 0; 
 }
 
@@ -30,9 +31,9 @@ static void test_valid_defines(void) {
     CU_ASSERT(S6CANBUS_FILLBUF_MAX_IDS>1); 
 }
 
-static void test_reset(void) {
+static void test_fill(void) {
     int r=0;
-    int i=0;
+    const unsigned char* fill = (const unsigned char*)"123456";
     s6cb_fillbuf_data_t *p=0;
     
     // check 1st element
@@ -42,17 +43,25 @@ static void test_reset(void) {
     CU_ASSERT_EQUAL(p->size, MSG1_SIZE);
     
     // insert id1
-    r=s6cb_fillbuf_reset_id(id1);
+    r=s6cb_fillbuf_fill_id(id1, fill, 4, 6);
     CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_NONE);
     
     // check buffer really erased
-    for(; i<MSG1_SIZE; i++) {
+    {
         unsigned char *buf=(unsigned char*)p->buf;
-        CU_ASSERT(buf[i]==S6CANBUS_FILLBUF_RESET_PATTERN);
-    }
-}
-
-static void test_fill(void) {
+        CU_ASSERT(buf[0]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[1]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[2]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[3]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[4]==fill[0]);
+        CU_ASSERT(buf[5]==fill[1]);
+        CU_ASSERT(buf[6]==fill[2]);
+        CU_ASSERT(buf[7]==fill[3]);
+        CU_ASSERT(buf[8]==fill[4]);
+        CU_ASSERT(buf[9]==fill[5]);
+        CU_ASSERT(buf[10]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[11]==S6CANBUS_FILLBUF_RESET_PATTERN);
+     }
 }
 
 int main(void) {
@@ -72,7 +81,6 @@ int main(void) {
     
     /* add the tests to the suite */
     if( (NULL == CU_add_test(pSuite, "Test valid defines", test_valid_defines)) ||
-        (NULL == CU_add_test(pSuite, "Test s6cb_fillbuf_reset_id", test_reset)) ||
         (NULL == CU_add_test(pSuite, "Test s6cb_fillbuf_fill_id", test_fill))
     ) {
         CU_cleanup_registry();
@@ -80,7 +88,7 @@ int main(void) {
     }
     
     /* Run all tests using the automated interface */
-    CU_set_output_filename("TU_fillbuf_reset_fill");
+    CU_set_output_filename("TU_fillbuf_fill");
     CU_automated_run_tests();
     CU_list_tests_to_file();
     
