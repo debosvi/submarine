@@ -16,10 +16,11 @@ typedef struct {
     s6canbus_id_t                id;
     void*                        buf;
     size_t                       size;
+    s6cb_fillbuf_fct             func;
     s6cb_fillbuf_data_store_t    store;
 } s6cb_fillbuf_data_t;
 
-#define S6CB_FILLBUF_DATA_ZERO   { .id=S6CANBUS_ID_INVALID, .buf=0, .size=0, .store=S6CB_FILLBUF_DATA_STORAGE_ZERO  }
+#define S6CB_FILLBUF_DATA_ZERO   { .id=S6CANBUS_ID_INVALID, .buf=0, .size=0, .store=S6CB_FILLBUF_DATA_STORAGE_ZERO, .func=0  }
 extern s6cb_fillbuf_data_t s6cb_fillbuf_data_zero;
 
 typedef struct {

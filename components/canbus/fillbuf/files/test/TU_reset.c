@@ -13,9 +13,14 @@
 s6canbus_id_t id1=0x1234;
 char msg1[MSG1_SIZE];
 
+static void myfunc(const s6canbus_id_t id, void* own) {
+    (void)own;
+    fprintf(stderr, "%s: %d\n", __PRETTY_FUNCTION__, id);
+}
+
 static int init_suite(void) { 
     s6cb_fillbuf_init(); 
-    s6cb_fillbuf_register_id(id1, msg1, MSG1_SIZE); 
+    s6cb_fillbuf_register_id(id1, msg1, MSG1_SIZE, myfunc); 
     memset(msg1, 0, MSG1_SIZE);
     return 0; 
 }
@@ -40,6 +45,7 @@ static void test_reset(void) {
     CU_ASSERT_EQUAL(p->id, id1);
     CU_ASSERT_EQUAL(p->buf, msg1);
     CU_ASSERT_EQUAL(p->size, MSG1_SIZE);
+    CU_ASSERT_EQUAL(p->func, myfunc);
     
     // insert id1
     r=s6cb_fillbuf_reset_id(id1);
