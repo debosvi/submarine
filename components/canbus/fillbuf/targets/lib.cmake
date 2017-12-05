@@ -54,5 +54,4 @@ set(LOCAL_SRC_FILES
 
 ## COMP_EXT_LIB_DEPS is the list of external library dependencies.
 ## optional
-set(COMP_EXT_LIB_DEPS skarnet)
-
+set(COMP_EXT_LIB_DEPS ${Skalibs_LIBRARIES})

@@ -20,7 +20,7 @@ static void myfunc(const s6canbus_id_t id, void* own) {
 
 static int init_suite(void) { 
     s6cb_fillbuf_init(); 
-    s6cb_fillbuf_register_id(id1, msg1, MSG1_SIZE, myfunc); 
+    s6cb_fillbuf_register_id(id1, msg1, MSG1_SIZE, myfunc, &id1); 
     memset(msg1, 0, MSG1_SIZE);
     s6cb_fillbuf_reset_id(id1); 
     return 0; 

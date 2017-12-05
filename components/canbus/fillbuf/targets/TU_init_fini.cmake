@@ -32,9 +32,9 @@ set(LOCAL_SRC_FILES TU_init_fini.c)
 ## COMP_SRC_LIB_DEPS_SHARED is the list of shared library dependencies (internal dependencies only).
 ## Be careful about system compatibility between static and shared libraries.
 ## optional
-set(COMP_SRC_LIB_DEPS_SHARED s6cb_fillbuf)
+set(COMP_SRC_LIB_DEPS_STATIC s6cb_fillbuf)
 
 
 ## COMP_EXT_LIB_DEPS is the list of external library dependencies.
 ## optional
-set(COMP_EXT_LIB_DEPS libcunit.a)
+# set(COMP_EXT_LIB_DEPS cunit)

@@ -6,21 +6,21 @@
 #include <s6canbus/errors.h>
 #include <s6canbus/fillbuf.h>
 
-#include <skalibs/genset.h>
+#include <skalibs/bitarray.h>
 
-#define S6CANBUS_FILLBUF_MAX_BUF_SIZE	(64)
-typedef GENSETB_TYPE(char, S6CANBUS_FILLBUF_MAX_BUF_SIZE>>3) s6cb_fillbuf_data_store_t;
-#define S6CB_FILLBUF_DATA_STORAGE_ZERO	{ .storage={0}, .freelist={0}, .info=GENSET_ZERO }
+#define S6CANBUS_FILLBUF_MAX_BUF_SIZE   (64)
+#define S6CANBUS_FILLBUF_MAX_BUF_BYTES  (S6CANBUS_FILLBUF_MAX_BUF_SIZE>>3)
 
 typedef struct {
-    s6canbus_id_t                id;
-    void*                        buf;
-    size_t                       size;
-    s6cb_fillbuf_fct             func;
-    s6cb_fillbuf_data_store_t    store;
+    void*               buf;
+    void*               own;
+    s6cb_fillbuf_fct    func;
+    s6canbus_id_t       id;
+    size_t              size;
+    unsigned char       bits[S6CANBUS_FILLBUF_MAX_BUF_BYTES];
 } s6cb_fillbuf_data_t;
 
-#define S6CB_FILLBUF_DATA_ZERO   { .id=S6CANBUS_ID_INVALID, .buf=0, .size=0, .store=S6CB_FILLBUF_DATA_STORAGE_ZERO, .func=0  }
+#define S6CB_FILLBUF_DATA_ZERO   { .id=S6CANBUS_ID_INVALID, .buf=0, .size=0, .bits={0}, .func=0, .own=0 }
 extern s6cb_fillbuf_data_t s6cb_fillbuf_data_zero;
 
 typedef struct {

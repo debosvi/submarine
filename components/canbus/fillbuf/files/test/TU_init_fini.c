@@ -9,6 +9,7 @@
 #include <CUnit/Console.h>
 #include <CUnit/Automated.h>
 
+#if 0
 static int init_suite_success(void) { return 0; }
 static int clean_suite_success(void) { return 0; }
 
@@ -86,4 +87,14 @@ int main(void) {
     /* Clean up registry and return */
     CU_cleanup_registry();
     return CU_get_error();
+}
+#endif
+
+int main(void) {
+    
+    int r=0;
+int i=0;
+
+r=s6cb_fillbuf_init();
+    return 1;
 }

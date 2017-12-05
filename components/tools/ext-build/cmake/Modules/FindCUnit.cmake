@@ -1,24 +1,66 @@
-# Find the CUnit headers and libraries
+#.rst:
+# FindSkalibs
+# ----------
 #
-#  CUNIT_INCLUDE_DIRS - The CUnit include directory (directory where CUnit/CUnit.h was found)
-#  CUNIT_LIBRARIES    - The libraries needed to use CUnit
-#  CUNIT_FOUND        - True if CUnit found in system
+# Find the skalibs include file and library.
+#
+# Result Variables
+# ^^^^^^^^^^^^^^^^
+#
+# This module defines the following variables:
+#
+# ``Skalibs_FOUND``
+#   True if CUnit is found.
+# ``CUnit_INCLUDE_DIRS``
+#   The include directories needed to use CUnit.
+# ``CUnit_LIBRARY_DIRS``
+#   The include directories needed to use CUnit.
+# ``CUnit_LIBRARIES``
+#   The CUnit library.
 
+set(CUnit_INCLUDE_DIRS)
+set(CUnit_LIBRARY_DIRS)
+set(CUnit_LIBRARIES)
 
-FIND_PATH(CUNIT_INCLUDE_DIR NAMES CUnit/CUnit.h)
-MARK_AS_ADVANCED(CUNIT_INCLUDE_DIR)
+find_path(CUnit_INCLUDE_PATH
+    NAMES CUnit/CUnit.h
+    PATHS /usr/include
+        /usr/local/include
+        "$ENV{HOME}/usr/include"
+    HINTS "${SKALIBS_HINT_DIR}/include"
+    DOC "CUnit header"
+    )
 
-FIND_LIBRARY(CUNIT_LIBRARY NAMES 
-    cunit
-    libcunit
-    cunitlib
+if(NOT "${CUnit_INCLUDE_PATH}" STREQUAL "")
+    set(CUnit_INCLUDE_DIRS ${CUnit_INCLUDE_PATH})
+endif()    
+
+find_library(CUnit_LIBRARY_PATH
+    NAMES cunit
+    PATHS /usr/lib
+        /usr/local/lib
+        "$ENV{HOME}/usr/lib"
+    HINTS "${SKALIBS_HINT_DIR}/lib"
+    PATH_SUFFIXES skalibs
+    DOC "CUnit library"
+    )
+
+if(NOT "${CUnit_LIBRARY_PATH}" STREQUAL "")
+    get_filename_component(LIB_DIR ${CUnit_LIBRARY_PATH} DIRECTORY)
+    get_filename_component(LIB_NAME ${CUnit_LIBRARY_PATH} NAME)
+    set(CUnit_LIBRARY_DIRS ${LIB_DIR})
+    set(CUnit_LIBRARIES ${LIB_NAME})
+endif()    
+
+# handle the QUIETLY and REQUIRED arguments and set CUnit_FOUND to TRUE if
+# all listed variables are TRUE
+include(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(CUnit DEFAULT_MSG
+    CUnit_LIBRARY_PATH 
+    CUnit_INCLUDE_PATH
 )
-MARK_AS_ADVANCED(CUNIT_LIBRARY)
 
-INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(CUnit DEFAULT_MSG CUNIT_LIBRARY CUNIT_INCLUDE_DIR)
-
-IF(CUNIT_FOUND)
-  SET(CUNIT_LIBRARIES ${CUNIT_LIBRARY})
-  SET(CUNIT_INCLUDE_DIRS ${CUNIT_INCLUDE_DIR})
-ENDIF(CUNIT_FOUND)
+mark_as_advanced(
+    CUnit_INCLUDE_PATH
+    CUnit_LIBRARY_PATH
+)

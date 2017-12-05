@@ -36,7 +36,7 @@ static void test_register_valid(void) {
     s6cb_fillbuf_reset_all();
     
     // insert id1
-    r=s6cb_fillbuf_register_id(id1, msg1, MSG1_SIZE, myfunc);
+    r=s6cb_fillbuf_register_id(id1, msg1, MSG1_SIZE, myfunc, &id1);
     CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_NONE);
     
     // check nb ids 
@@ -48,9 +48,10 @@ static void test_register_valid(void) {
     CU_ASSERT_EQUAL(p->buf, msg1);
     CU_ASSERT_EQUAL(p->size, MSG1_SIZE);
     CU_ASSERT_EQUAL(p->func, myfunc);
+    CU_ASSERT_EQUAL(p->own, &id1);
     
     // insert id2
-    r=s6cb_fillbuf_register_id(id2, msg2, MSG2_SIZE, myfunc);
+    r=s6cb_fillbuf_register_id(id2, msg2, MSG2_SIZE, myfunc, &id2);
     CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_NONE);
     
     // check nb ids 
@@ -62,6 +63,7 @@ static void test_register_valid(void) {
     CU_ASSERT_EQUAL(p->buf, msg2);
     CU_ASSERT_EQUAL(p->size, MSG2_SIZE);
     CU_ASSERT_EQUAL(p->func, myfunc);
+    CU_ASSERT_EQUAL(p->own, &id2);
     
 }
 
@@ -71,23 +73,23 @@ static void test_register_twice(void) {
     s6cb_fillbuf_reset_all();
     
     // insert id1
-    r=s6cb_fillbuf_register_id(id1, msg1, MSG1_SIZE, myfunc);
+    r=s6cb_fillbuf_register_id(id1, msg1, MSG1_SIZE, myfunc, &id1);
     CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_NONE);
 
     // insert id2
-    r=s6cb_fillbuf_register_id(id2, msg2, MSG2_SIZE, myfunc);
+    r=s6cb_fillbuf_register_id(id2, msg2, MSG2_SIZE, myfunc, &id2);
     CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_NONE);
     
     // check nb ids 
     CU_ASSERT_EQUAL(s6cb_fillbuf_storage_data.n, 2);
     
     // insert id2 again, must fail
-    r=s6cb_fillbuf_register_id(id2, msg2, MSG2_SIZE, myfunc);
+    r=s6cb_fillbuf_register_id(id2, msg2, MSG2_SIZE, myfunc, 0);
     CU_ASSERT_NOT_EQUAL(r, S6CANBUS_ERROR_NONE);
     CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_ALREADY);
     
     // insert id1 again, must fail
-    r=s6cb_fillbuf_register_id(id1, msg1, MSG1_SIZE, myfunc);
+    r=s6cb_fillbuf_register_id(id1, msg1, MSG1_SIZE, myfunc, 0);
     CU_ASSERT_NOT_EQUAL(r, S6CANBUS_ERROR_NONE);
     CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_ALREADY);
 }
@@ -99,11 +101,11 @@ static void test_unregister_valid(void) {
     s6cb_fillbuf_reset_all();
    
     // insert id1
-    r=s6cb_fillbuf_register_id(id1, msg1, MSG1_SIZE, myfunc);
+    r=s6cb_fillbuf_register_id(id1, msg1, MSG1_SIZE, myfunc, &id1);
     CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_NONE);
     
     // insert id2
-    r=s6cb_fillbuf_register_id(id2, msg2, MSG2_SIZE, myfunc);
+    r=s6cb_fillbuf_register_id(id2, msg2, MSG2_SIZE, myfunc, &id2);
     CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_NONE);
 
     // check nb ids 
@@ -122,6 +124,7 @@ static void test_unregister_valid(void) {
     CU_ASSERT_EQUAL(p->buf, msg2);
     CU_ASSERT_EQUAL(p->size, MSG2_SIZE);
     CU_ASSERT_EQUAL(p->func, myfunc);
+    CU_ASSERT_EQUAL(p->own, &id2);
     
     // check 2nd element
     p=&s6cb_fillbuf_storage_data.d[1];
@@ -137,11 +140,11 @@ static void test_unregister_twice(void) {
     s6cb_fillbuf_reset_all();
     
     // insert id1
-    r=s6cb_fillbuf_register_id(id1, msg1, MSG1_SIZE, myfunc);
+    r=s6cb_fillbuf_register_id(id1, msg1, MSG1_SIZE, myfunc, &id1);
     CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_NONE);
     
     // insert id2
-    r=s6cb_fillbuf_register_id(id2, msg2, MSG2_SIZE, myfunc);
+    r=s6cb_fillbuf_register_id(id2, msg2, MSG2_SIZE, myfunc, &id2);
     CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_NONE);
 
     // check nb ids 
@@ -170,7 +173,7 @@ static void test_register_limits(void) {
     
     for(; i<S6CANBUS_FILLBUF_MAX_IDS; i++) {
         // insert id1 + i
-        r=s6cb_fillbuf_register_id(id1+i, msg1, MSG1_SIZE+i, myfunc);
+        r=s6cb_fillbuf_register_id(id1+i, msg1, MSG1_SIZE+i, myfunc, &id1);
         CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_NONE);
     
         // check nb ids 
@@ -183,7 +186,7 @@ static void test_register_limits(void) {
         CU_ASSERT_EQUAL(p->size, MSG1_SIZE+i);
     }
     
-    r=s6cb_fillbuf_register_id(id1+i, msg1, MSG1_SIZE+i, myfunc);
+    r=s6cb_fillbuf_register_id(id1+i, msg1, MSG1_SIZE+i, myfunc, &id1);
     CU_ASSERT_NOT_EQUAL(r, S6CANBUS_ERROR_NONE);
     CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_FULL);    
 }
