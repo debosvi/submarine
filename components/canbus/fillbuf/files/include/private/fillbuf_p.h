@@ -6,17 +6,24 @@
 #include <s6canbus/errors.h>
 #include <s6canbus/fillbuf.h>
 
+#include <skalibs/genset.h>
+
+#define S6CANBUS_FILLBUF_MAX_BUF_SIZE	(64)
+typedef GENSETB_TYPE(char, S6CANBUS_FILLBUF_MAX_BUF_SIZE>>3) s6cb_fillbuf_data_store_t;
+#define S6CB_FILLBUF_DATA_STORAGE_ZERO	{ .storage={0}, .freelist={0}, .info=GENSET_ZERO }
+
 typedef struct {
-    s6canbus_id_t id;
-    void* buf;
-    size_t size;
+    s6canbus_id_t                id;
+    void*                        buf;
+    size_t                       size;
+    s6cb_fillbuf_data_store_t    store;
 } s6cb_fillbuf_data_t;
 
-#define S6CB_FILLBUF_DATA_ZERO   { .id=S6CANBUS_ID_INVALID, .buf=0, .size=0 }
+#define S6CB_FILLBUF_DATA_ZERO   { .id=S6CANBUS_ID_INVALID, .buf=0, .size=0, .store=S6CB_FILLBUF_DATA_STORAGE_ZERO  }
 extern s6cb_fillbuf_data_t s6cb_fillbuf_data_zero;
 
 typedef struct {
-    unsigned n;
+    size_t n;
     s6cb_fillbuf_data_t d[S6CANBUS_FILLBUF_MAX_IDS];
 } s6cb_fillbuf_storage_t;
 

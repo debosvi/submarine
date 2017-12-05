@@ -37,4 +37,4 @@ set(COMP_SRC_LIB_DEPS_SHARED s6cb_fillbuf)
 
 ## COMP_EXT_LIB_DEPS is the list of external library dependencies.
 ## optional
-set(COMP_EXT_LIB_DEPS ${CUNIT_LIBRARIES})
+set(COMP_EXT_LIB_DEPS libcunit.a)
