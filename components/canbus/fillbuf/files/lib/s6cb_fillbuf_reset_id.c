@@ -13,5 +13,7 @@ int s6cb_fillbuf_reset_id(const s6canbus_id_t id) {
     if(p->id!=id) return S6CANBUS_ERROR_INTERNAL;
     
     memset(p->buf, S6CANBUS_FILLBUF_RESET_PATTERN, p->size);
+    bitarray_clearn(p->bits, 0, p->size);
+    
     return S6CANBUS_ERROR_NONE;
 }

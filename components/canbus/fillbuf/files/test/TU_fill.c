@@ -2,7 +2,8 @@
 
 #include <stdio.h>
 
-#include <s6canbus/s6canbus.h>
+#include <s6canbus/errors.h>
+#include <s6canbus/fillbuf.h>
 #include <private/fillbuf_p.h>
 
 #include <CUnit/Basic.h>
@@ -22,7 +23,6 @@ static int init_suite(void) {
     s6cb_fillbuf_init(); 
     s6cb_fillbuf_register_id(id1, msg1, MSG1_SIZE, myfunc, &id1); 
     memset(msg1, 0, MSG1_SIZE);
-    s6cb_fillbuf_reset_id(id1); 
     return 0; 
 }
 
@@ -36,10 +36,12 @@ static void test_valid_defines(void) {
     CU_ASSERT(S6CANBUS_FILLBUF_MAX_IDS>1); 
 }
 
-static void test_fill(void) {
+static void test_fill_partial(void) {
     int r=0;
     const unsigned char* fill = (const unsigned char*)"123456";
     s6cb_fillbuf_data_t *p=0;
+
+    s6cb_fillbuf_reset_id(id1); 
     
     // check 1st element
     p=&s6cb_fillbuf_storage_data.d[0];
@@ -66,8 +68,119 @@ static void test_fill(void) {
         CU_ASSERT(buf[9]==fill[5]);
         CU_ASSERT(buf[10]==S6CANBUS_FILLBUF_RESET_PATTERN);
         CU_ASSERT(buf[11]==S6CANBUS_FILLBUF_RESET_PATTERN);
-     }
+    }
 }
+
+static void test_fill_complete(void) {
+    int r=0;
+    const unsigned char* fill = (const unsigned char*)"012345678987";
+    s6cb_fillbuf_data_t *p=0;
+
+    s6cb_fillbuf_reset_id(id1); 
+    
+    // check 1st element
+    p=&s6cb_fillbuf_storage_data.d[0];
+    CU_ASSERT_EQUAL(p->id, id1);
+    CU_ASSERT_EQUAL(p->buf, msg1);
+    CU_ASSERT_EQUAL(p->size, MSG1_SIZE);
+    
+    // insert id1
+    r=s6cb_fillbuf_fill_id(id1, fill, 0, MSG1_SIZE);
+    CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_NONE);
+    
+    // check buffer really erased
+    {
+        unsigned char *buf=(unsigned char*)p->buf;
+        unsigned int i=0;
+        for(; i<MSG1_SIZE; i++)
+        	CU_ASSERT(buf[i]==fill[i]);
+    }
+}
+
+static void test_fill_overflow(void) {
+    int r=0;
+    const unsigned char* fill = (const unsigned char*)"012345678987";
+    s6cb_fillbuf_data_t *p=0;
+
+    s6cb_fillbuf_reset_id(id1); 
+    
+    // check 1st element
+    p=&s6cb_fillbuf_storage_data.d[0];
+    CU_ASSERT_EQUAL(p->id, id1);
+    CU_ASSERT_EQUAL(p->buf, msg1);
+    CU_ASSERT_EQUAL(p->size, MSG1_SIZE);
+    
+    // insert id1
+    r=s6cb_fillbuf_fill_id(id1, fill, 1, MSG1_SIZE);
+    CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_OVERLAY);
+    
+    // check buffer really erased
+    {
+        unsigned char *buf=(unsigned char*)p->buf;
+        unsigned int i=0;
+        for(; i<MSG1_SIZE; i++)
+        	CU_ASSERT(buf[i]==S6CANBUS_FILLBUF_RESET_PATTERN);
+    }
+}
+
+#ifdef S6CANBUS_FILLBUF_CHECK_FILL_OVERLAY    
+
+static void test_fill_refill(void) {
+    int r=0;
+    const unsigned char* fill = (const unsigned char*)"123456";
+    s6cb_fillbuf_data_t *p=0;
+
+    s6cb_fillbuf_reset_id(id1); 
+    
+    // check 1st element
+    p=&s6cb_fillbuf_storage_data.d[0];
+    CU_ASSERT_EQUAL(p->id, id1);
+    CU_ASSERT_EQUAL(p->buf, msg1);
+    CU_ASSERT_EQUAL(p->size, MSG1_SIZE);
+    
+    // insert id1
+    r=s6cb_fillbuf_fill_id(id1, fill, 4, 6);
+    CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_NONE);
+    
+    // check buffer really erased
+    {
+        unsigned char *buf=(unsigned char*)p->buf;
+        CU_ASSERT(buf[0]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[1]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[2]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[3]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[4]==fill[0]);
+        CU_ASSERT(buf[5]==fill[1]);
+        CU_ASSERT(buf[6]==fill[2]);
+        CU_ASSERT(buf[7]==fill[3]);
+        CU_ASSERT(buf[8]==fill[4]);
+        CU_ASSERT(buf[9]==fill[5]);
+        CU_ASSERT(buf[10]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[11]==S6CANBUS_FILLBUF_RESET_PATTERN);
+    }
+    
+    // insert  again id1
+    r=s6cb_fillbuf_fill_id(id1, fill, 6, 6);
+    CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_OVERLAY);
+    
+    // check buffer really erased
+    {
+        unsigned char *buf=(unsigned char*)p->buf;
+        CU_ASSERT(buf[0]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[1]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[2]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[3]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[4]==fill[0]);
+        CU_ASSERT(buf[5]==fill[1]);
+        CU_ASSERT(buf[6]==fill[2]);
+        CU_ASSERT(buf[7]==fill[3]);
+        CU_ASSERT(buf[8]==fill[4]);
+        CU_ASSERT(buf[9]==fill[5]);
+        CU_ASSERT(buf[10]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[11]==S6CANBUS_FILLBUF_RESET_PATTERN);
+    }
+}
+#endif
 
 int main(void) {
     
@@ -86,7 +199,13 @@ int main(void) {
     
     /* add the tests to the suite */
     if( (NULL == CU_add_test(pSuite, "Test valid defines", test_valid_defines)) ||
-        (NULL == CU_add_test(pSuite, "Test s6cb_fillbuf_fill_id", test_fill))
+        (NULL == CU_add_test(pSuite, "Test fill partial", test_fill_partial)) ||
+        (NULL == CU_add_test(pSuite, "Test fill complete", test_fill_complete)) ||
+        (NULL == CU_add_test(pSuite, "Test fill overflow", test_fill_overflow))
+#ifdef S6CANBUS_FILLBUF_CHECK_FILL_OVERLAY        
+		||
+        (NULL == CU_add_test(pSuite, "Test fill refill", test_fill_refill))
+#endif
     ) {
         CU_cleanup_registry();
         return CU_get_error();

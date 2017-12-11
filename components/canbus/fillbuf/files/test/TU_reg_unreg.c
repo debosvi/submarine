@@ -2,7 +2,8 @@
 
 #include <stdio.h>
 
-#include <s6canbus/s6canbus.h>
+#include <s6canbus/errors.h>
+#include <s6canbus/fillbuf.h>
 #include <private/fillbuf_p.h>
 
 #include <CUnit/Basic.h>
@@ -177,13 +178,13 @@ static void test_register_limits(void) {
         CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_NONE);
     
         // check nb ids 
-        CU_ASSERT_EQUAL(s6cb_fillbuf_storage_data.n, i+1);
+        CU_ASSERT_EQUAL(s6cb_fillbuf_storage_data.n, (size_t)i+1);
     
         // check 1st element
         p=&s6cb_fillbuf_storage_data.d[i];
         CU_ASSERT_EQUAL(p->id, id1+i);
         CU_ASSERT_EQUAL(p->buf, msg1);
-        CU_ASSERT_EQUAL(p->size, MSG1_SIZE+i);
+        CU_ASSERT_EQUAL(p->size, (size_t)MSG1_SIZE+i);
     }
     
     r=s6cb_fillbuf_register_id(id1+i, msg1, MSG1_SIZE+i, myfunc, &id1);
@@ -201,7 +202,7 @@ static void test_unregister_limits(void) {
         CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_NONE);
         
         // check nb ids 
-        CU_ASSERT_EQUAL(s6cb_fillbuf_storage_data.n, S6CANBUS_FILLBUF_MAX_IDS-1-i);
+        CU_ASSERT_EQUAL(s6cb_fillbuf_storage_data.n, (size_t)S6CANBUS_FILLBUF_MAX_IDS-1-i);
     }
     
     r=s6cb_fillbuf_unregister_id(id1+i);

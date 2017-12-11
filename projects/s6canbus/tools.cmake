@@ -19,3 +19,5 @@ link_directories(${Skalibs_LIBRARY_DIRS})
 
 add_definitions(-DUSE_FILLBUF_CONFIG_FILE)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
+add_definitions(-DS6CANBUS_FILLBUF_CHECK_FILL_OVERLAY)

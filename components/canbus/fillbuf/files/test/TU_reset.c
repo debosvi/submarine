@@ -2,7 +2,8 @@
 
 #include <stdio.h>
 
-#include <s6canbus/s6canbus.h>
+#include <s6canbus/errors.h>
+#include <s6canbus/fillbuf.h>
 #include <private/fillbuf_p.h>
 
 #include <CUnit/Basic.h>
@@ -56,6 +57,10 @@ static void test_reset(void) {
     for(; i<MSG1_SIZE; i++) {
         unsigned char *buf=(unsigned char*)p->buf;
         CU_ASSERT(buf[i]==S6CANBUS_FILLBUF_RESET_PATTERN);
+    }
+    for(; i<S6CANBUS_FILLBUF_MAX_BUF_BYTES; i++) {
+        unsigned char *buf=(unsigned char*)p->bits;
+        CU_ASSERT(buf[i]==0);
     }
 }
 

@@ -11,9 +11,21 @@ int s6cb_fillbuf_fill_id(const s6canbus_id_t id, const void* const buf, size_t o
 
     s6cb_fillbuf_data_t *p=&s6cb_fillbuf_storage_data.d[i];
     if(p->id!=id) return S6CANBUS_ERROR_INTERNAL;
-    if(offset+size>=p->size) return S6CANBUS_ERROR_OVERLAY;
+    if(offset+size>p->size) return S6CANBUS_ERROR_OVERLAY;
+#ifdef S6CANBUS_FILLBUF_CHECK_FILL_OVERLAY
+	{
+		unsigned int o=0;
+		unsigned int j=0;
+		for(; j<size && !o; j++) {
+			if(bitarray_isset(p->bits, offset+j))
+				o=1;
+		}
+		if(o) return S6CANBUS_ERROR_OVERLAY;
+	}
+#endif
     
     memcpy(p->buf+offset, buf, size);
+    bitarray_setn(p->bits, offset, size);
     
     if(bitarray_countones(p->bits, S6CANBUS_FILLBUF_MAX_BUF_SIZE)>=p->size) 
         (*p->func)(p->id, p->own);

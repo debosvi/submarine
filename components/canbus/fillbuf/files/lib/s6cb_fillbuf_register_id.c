@@ -14,6 +14,7 @@ int s6cb_fillbuf_register_id(const s6canbus_id_t id, const void* const buf, size
         p->size=size;   
         p->func=func;   
         p->own=own;   
+        memset(p->bits, 0, S6CANBUS_FILLBUF_MAX_BUF_BYTES);
     }
     
     s6cb_fillbuf_storage_data.n++;
