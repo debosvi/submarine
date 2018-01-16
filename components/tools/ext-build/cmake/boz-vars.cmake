@@ -35,7 +35,7 @@ else()
     set(CMAKE_BUILD_TYPE DEBUG)
 endif()
 
-message(STATUS "Build mode: "${CMAKE_BUILD_TYPE})
+message(STATUS "Build mode: ${CMAKE_BUILD_TYPE}")
 
 if(EXISTS "${LOAD_CONFIG_DIR}/Config.in")
 add_definitions(-include ${CMAKE_BINARY_DIR}/config/config.h )
@@ -57,6 +57,9 @@ endif()
 add_definitions(-std=c99)
 add_definitions(-Wall  -Wextra)
 add_definitions(-D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700)
+
+SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS)
+SET(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS)
 
 set(CMAKE_C_FLAGS_DEBUG "-O0 -ggdb")
 set(CMAKE_C_FLAGS_RELEASE "-O2 -Werror")
