@@ -5,6 +5,7 @@
 #include <private/fillbuf_p.h>
 
 int s6cb_fillbuf_fill_id(const s6canbus_id_t id, const void* const buf, size_t offset, size_t size) {
+    if(!size) return S6CANBUS_ERROR_INVAL;
     if(!buf) return S6CANBUS_ERROR_NULLPTR;
     int i=priv_s6cb_fillbuf_find_id(id);
     if(i<0) return S6CANBUS_ERROR_NOTFOUND;
@@ -12,16 +13,10 @@ int s6cb_fillbuf_fill_id(const s6canbus_id_t id, const void* const buf, size_t o
     s6cb_fillbuf_data_t *p=&s6cb_fillbuf_storage_data.d[i];
     if(p->id!=id) return S6CANBUS_ERROR_INTERNAL;
     if(offset+size>p->size) return S6CANBUS_ERROR_OVERLAY;
+    
 #ifdef S6CANBUS_FILLBUF_CHECK_FILL_OVERLAY
-	{
-		unsigned int o=0;
-		unsigned int j=0;
-		for(; j<size && !o; j++) {
-			if(bitarray_isset(p->bits, offset+j))
-				o=1;
-		}
-		if(o) return S6CANBUS_ERROR_OVERLAY;
-	}
+    if(bitarray_firstset_skip (p->bits, S6CANBUS_FILLBUF_MAX_BUF_SIZE, offset)<(offset+size))
+        return S6CANBUS_ERROR_OVERLAY;
 #endif
     
     memcpy(p->buf+offset, buf, size);

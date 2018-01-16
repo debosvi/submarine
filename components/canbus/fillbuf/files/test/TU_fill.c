@@ -36,11 +36,47 @@ static void test_valid_defines(void) {
     CU_ASSERT(S6CANBUS_FILLBUF_MAX_IDS>1); 
 }
 
+static void test_fill_args(void) {
+    int r=0;
+    const unsigned char* fill = (const unsigned char*)"123456";
+    s6cb_fillbuf_data_t *p=0;
+    
+    s6cb_fillbuf_reset_id(id1); 
+    
+    // check 1st element
+    p=&s6cb_fillbuf_storage_data.d[0];
+    CU_ASSERT_EQUAL(p->id, id1);
+    CU_ASSERT_EQUAL(p->buf, msg1);
+    CU_ASSERT_EQUAL(p->size, MSG1_SIZE);
+    
+    // insert id1
+    r=s6cb_fillbuf_fill_id(id1, fill, 4, 0);
+    CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_INVAL);
+    
+    // check buffer really erased
+    {
+        unsigned char *buf=(unsigned char*)p->buf;
+        CU_ASSERT(buf[0]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[1]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[2]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[3]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[4]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[5]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[6]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[7]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[8]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[9]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[10]==S6CANBUS_FILLBUF_RESET_PATTERN);
+        CU_ASSERT(buf[11]==S6CANBUS_FILLBUF_RESET_PATTERN);
+    }
+}
+
+
 static void test_fill_partial(void) {
     int r=0;
     const unsigned char* fill = (const unsigned char*)"123456";
     s6cb_fillbuf_data_t *p=0;
-
+    
     s6cb_fillbuf_reset_id(id1); 
     
     // check 1st element
@@ -160,7 +196,7 @@ static void test_fill_refill(void) {
     }
     
     // insert  again id1
-    r=s6cb_fillbuf_fill_id(id1, fill, 6, 6);
+    r=s6cb_fillbuf_fill_id(id1, fill, 6, 1);
     CU_ASSERT_EQUAL(r, S6CANBUS_ERROR_OVERLAY);
     
     // check buffer really erased
@@ -199,6 +235,7 @@ int main(void) {
     
     /* add the tests to the suite */
     if( (NULL == CU_add_test(pSuite, "Test valid defines", test_valid_defines)) ||
+        (NULL == CU_add_test(pSuite, "Test fill args", test_fill_args)) ||
         (NULL == CU_add_test(pSuite, "Test fill partial", test_fill_partial)) ||
         (NULL == CU_add_test(pSuite, "Test fill complete", test_fill_complete)) ||
         (NULL == CU_add_test(pSuite, "Test fill overflow", test_fill_overflow))

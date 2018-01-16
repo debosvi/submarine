@@ -21,7 +21,7 @@ include(tools.cmake)
 BOZ_COMPS_FIND_ALL("${PRJ_DIR}/components/canbus/base")
 BOZ_COMPS_FIND_ALL("${PRJ_DIR}/components/canbus/fillbuf")
 
-#BOZ_COMPS_FIND_ALL("${PRJ_DIR}/components/canbus/s6canbus")
-#BOZ_COMPS_FIND_ALL("${PRJ_DIR}/components/canbus/canmsg")
+# BOZ_COMPS_FIND_ALL("${PRJ_DIR}/components/canbus/canmsg")
+# BOZ_COMPS_FIND_ALL("${PRJ_DIR}/components/canbus/s6canbus")
 
 #BOZ_COMPS_FIND_ALL("${PRJ_DIR}/components/misc/tools")
