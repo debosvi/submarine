@@ -19,9 +19,11 @@ set(LOCAL_SRC_DIR_SUFFIX lib)
 ## mandatory
 set(LOCAL_SRC_FILES 
     s6canmsg_buf_zero.c
-    s6canmsg_init_buf.c
-    s6canmsg_get_next.c
-    s6canmsg_ack_current.c
+    s6canmsg_init.c
+    s6canmsg_next.c
+    s6canmsg_ack.c
+    s6canmsg_fill.c
+    s6canmsg_rewind.c
 )
 
 ## LOCAL_SRC_FILES_ADDED is the list of files to compile with absolute path (useful if generated files are somewhere).

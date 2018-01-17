@@ -5,22 +5,25 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define S6CANMSG_MAX_LENGTH     (64)
+//#define S6CANMSG_MAX_LENGTH     (64)
 
 typedef uint8_t s6canmsg_size_t;
 typedef struct {
     char *x;
     s6canmsg_size_t p;
+    s6canmsg_size_t m;
     s6canmsg_size_t n;
 } s6canmsg_buf_t;   
-#define S6CANMSG_BUF_ZERO   { .x=0, .p=0, .n=0 }
+#define S6CANMSG_BUF_ZERO   { .x=0, .p=0, .m=0, .n=0 }
 extern const s6canmsg_buf_t s6canmsg_buf_zero;
 
-#define S6CANMSG_BUF_INIT(x)  { .x=x, .p=0, .n=0 }
+#define S6CANMSG_BUF_INIT(x,m)  { .x=x, .p=0, .n=0, .m=m }
 
-int s6canmsg_init_buf(s6canmsg_buf_t* const b, const char* const buf, const size_t n);
-int s6canmsg_get_next(s6canmsg_buf_t* const b, char* const buf, const size_t n);
-int s6canmsg_ack_current(s6canmsg_buf_t* const b, const size_t n);
+int s6canmsg_init(s6canmsg_buf_t* const b, const char* const buf, const size_t max);
+int s6canmsg_next(s6canmsg_buf_t* const b, char* const buf, const size_t n);
+int s6canmsg_ack(s6canmsg_buf_t* const b, const size_t n);
+int s6canmsg_fill(s6canmsg_buf_t* const b, const char* const buf, const size_t n);
+int s6canmsg_rewind(s6canmsg_buf_t* const b);
 
 #define S6CANMSG_HAS_DATA(b)	((b)->p<(b)->n)
 
