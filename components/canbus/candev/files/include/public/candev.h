@@ -3,6 +3,7 @@
 #ifndef __S6CANBUS_CANDEV_H__
 #define __S6CANBUS_CANDEV_H__
 
+#include <sys/types.h>
 #include <s6canbus/types.h>
 
 #if !defined(USE_CANDEV_CONFIG_FILE)
@@ -18,11 +19,11 @@ ssize_t s6cb_candev_write(int fd, const void *buf, size_t count);
 #if defined(USE_CANDEV_CONFIG_FILE)
 #include "candev-config.h"
 
-#if !defined(S6CANBUS_CANDEV_REGULAR) || !defined(S6CANBUS_CANDEV_FAKE)
+#if !S6CANBUS_CANDEV_REGULAR & !S6CANBUS_CANDEV_FAKE
 #error "Custom CANDEV config file must define either S6CANBUS_CANDEV_REGULAR or S6CANBUS_CANDEV_FAKE"
 #endif
 
-#if defined(S6CANBUS_CANDEV_REGULAR) & defined(S6CANBUS_CANDEV_FAKE)
+#if S6CANBUS_CANDEV_REGULAR & S6CANBUS_CANDEV_FAKE
 #error "Custom CANDEV config file must define only one amog S6CANBUS_CANDEV_REGULAR and S6CANBUS_CANDEV_FAKE"
 #endif
 
