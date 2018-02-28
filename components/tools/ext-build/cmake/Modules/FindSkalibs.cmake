@@ -27,6 +27,7 @@ find_path(Skalibs_INCLUDE_PATH
     PATHS /usr/include
         /usr/local/include
         "$ENV{HOME}/usr/include"
+        "$ENV{HOME}/cross/native/include"
     HINTS "${SKALIBS_HINT_DIR}/include"
     DOC "Skalibs sysdeps"
     )
@@ -40,6 +41,7 @@ find_library(Skalibs_LIBRARY_PATH
     PATHS /usr/lib
         /usr/local/lib
         "$ENV{HOME}/usr/lib"
+        "$ENV{HOME}/cross/native/lib"
     HINTS "${SKALIBS_HINT_DIR}/lib"
     PATH_SUFFIXES skalibs
     DOC "Skalibs library"
@@ -50,7 +52,7 @@ if(NOT "${Skalibs_LIBRARY_PATH}" STREQUAL "")
     get_filename_component(LIB_NAME ${Skalibs_LIBRARY_PATH} NAME)
     set(Skalibs_LIBRARY_DIRS ${LIB_DIR})
     set(Skalibs_LIBRARIES ${LIB_NAME})
-endif()    
+endif()   
 
 # handle the QUIETLY and REQUIRED arguments and set Skalibs_FOUND to TRUE if
 # all listed variables are TRUE
