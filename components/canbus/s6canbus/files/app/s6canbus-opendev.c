@@ -7,6 +7,7 @@
 #include <skalibs/strerr2.h>
 #include <skalibs/djbunix.h>
 #include <skalibs/environ.h>
+#include <skalibs/env.h>
 
 #include <s6canbus/s6canbus.h>
 
@@ -45,7 +46,7 @@ int main (int argc, char const *const *argv, char const *const *envp) {
     cfd=s6canbus_open(dev);
     if (cfd<0) strerr_diefu2sys(111, "open CAN device: ", dev) ;
 
-    if(env_get("FORCE_CANFD")) {
+    if(env_get2(envp, "FORCE_CANFD")) {
         dup2(cfd, 50);
         cfd=50;
     }

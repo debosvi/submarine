@@ -68,7 +68,7 @@ int main (int argc, char const *const *argv, char const *const *envp) {
     if (argc > 0) dieusage() ;
         
     cfd=s6canbus_get_openfd();
-    if(!s6canmsg_init_buf(&msg_buf, all_buf, MSG_SIZE)) strerr_diefu1sys(111, "s6canmsg_init_buf");
+    if(!s6canmsg_init(&msg_buf, all_buf, MSG_SIZE)) strerr_diefu1sys(111, "s6canmsg_init_buf");
     init_buf(all_buf, MSG_SIZE);    
     show_buf(all_buf, MSG_SIZE);    
 
@@ -107,11 +107,11 @@ int main (int argc, char const *const *argv, char const *const *envp) {
             else if(x[0].events & IOPAUSE_WRITE) {
                 strerr_warni2x(ts_str, ", frame to send");
                 frame.can_id=0x1234;
-                n=s6canmsg_get_next(&msg_buf, (char*)frame.data, 8);
+                n=s6canmsg_next(&msg_buf, (char*)frame.data, 8);
                 frame.len=n;
                 
                 if(fd_write(x[0].fd, (char*)&frame, sizeof(struct canfd_frame)))
-                    s6canmsg_ack_current(&msg_buf, n);
+                    s6canmsg_ack(&msg_buf, n);
                 
             }
             else {
