@@ -46,8 +46,11 @@ int main (int argc, char const *const *argv, char const *const *envp) {
     cfd=s6canbus_open(dev);
     if (cfd<0) strerr_diefu2sys(111, "open CAN device: ", dev) ;
 
-    if(env_get2(envp, "FORCE_CANFD")) {
+    char *fstr = (char*)env_get2(envp, "FORCE_CANFD");
+    
+    if(fstr && !strncmp(fstr, "1", 1)) {
         dup2(cfd, 50);
+        close(cfd);
         cfd=50;
     }
     
