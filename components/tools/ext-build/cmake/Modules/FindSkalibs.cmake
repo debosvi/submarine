@@ -26,6 +26,7 @@ find_path(Skalibs_INCLUDE_PATH
     NAMES skalibs/sysdeps.h
     PATHS /usr/include
         /usr/local/include
+        /opt/skarnet/include
         "$ENV{HOME}/usr/include"
         "$ENV{HOME}/cross/native/include"
     HINTS "${SKALIBS_HINT_DIR}/include"
@@ -40,6 +41,7 @@ find_library(Skalibs_LIBRARY_PATH
     NAMES skarnet
     PATHS /usr/lib
         /usr/local/lib
+        /opt/skarnet/lib
         "$ENV{HOME}/usr/lib"
         "$ENV{HOME}/cross/native/lib"
     HINTS "${SKALIBS_HINT_DIR}/lib"
