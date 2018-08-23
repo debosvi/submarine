@@ -21,6 +21,7 @@ macro(BOZ_INSTALL_SCRIPT file)
     message(STATUS "Install script ${file}")
     install(FILES ${file}
         DESTINATION ${BINARY_INSTALL_DIR}
+        PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
     )
 endmacro()
 
