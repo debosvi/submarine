@@ -13,6 +13,7 @@
 #include <linux/can.h>
 #include <linux/can/raw.h>
 
+#include <skalibs/buffer.h>
 #include <skalibs/djbunix.h>
 #include <skalibs/environ.h>
 #include <skalibs/env.h>
@@ -31,11 +32,6 @@ static const char* default_device_name = "can0";
 
 // CANBUS stuffs 
 
-#define PDU_FORMAT_RUDDER   (0x01)
-#define PGN_RUDDER          (0x01<<8)
-#define PGN1                (PGN_RUDDER + 0x00)
-#define PGN2                (PGN_RUDDER + 0x01)
-
 static uint32_t address_from_pgn(const uint16_t pgn, const uint8_t src) {
     return (CAN_EFF_FLAG+(pgn<<8)+src);
 }
@@ -45,36 +41,85 @@ static uint8_t src_from_address(const uint32_t add) {
 }
 
 static uint16_t pgn_from_address(const uint32_t add) {
-    return ((add>>8)&0xffff);
+    if(add&CAN_EFF_MASK) return ((add>>8)&0xffff);
+    return 0;
 }
 
-
-const uint8_t node_src_address = 0x01;
+const uint8_t node_src_address = S6CB_DEVICE_RUDDER1;
 
 #define address_from_pgn_g(pgn) address_from_pgn(pgn, node_src_address)
 
 static struct can_frame rx_canframe;
 static struct can_frame tx_canframe;
-static int send_canframe = 1;
 
 // event loop stuffs 
 static int cont = 1 ;
 static tain_t deadline ;
-static tain_t step_dline;
-static tain_t send_dline;
+
 
 // others
-static uint16_t reach_value = 1234;
-static uint16_t current_value = 1234;
-static uint16_t step_value = 10;
 
-static void update_value(void) {
-    int step = abs(reach_value-current_value);
-    step = (step<step_value?step:step_value);
-    if(reach_value>current_value)
-        current_value+=step;
-    else
-        current_value-=step;
+typedef struct {
+    s6cb_pgn_t pgn;
+    uint16_t reach_value;
+    uint16_t current_value;
+    int send;
+    int tto;
+    tain_t dline;
+} rudder_value_t;
+
+static rudder_value_t rudder_values[2] = {
+    { .pgn=S6CB_PGN_BUILD_ID(S6CB_PGN_RUDDER,0), .reach_value=0x200, .current_value=0x200, .send=0, .tto=100, .dline=TAIN_ZERO },
+    { .pgn=S6CB_PGN_BUILD_ID(S6CB_PGN_RUDDER,1), .reach_value=0x200, .current_value=0x200, .send=0, .tto=250, .dline=TAIN_ZERO }
+};
+static uint16_t step_value = 50;
+
+static void update_value(rudder_value_t* p_rudder) {
+    if(!p_rudder) return;
+    
+    if(tain_future(&p_rudder->dline)) return;
+    if(p_rudder->send) return;
+    buffer_putsflush(buffer_2, "update\n") ;
+   
+    int step = abs(p_rudder->reach_value-p_rudder->current_value);
+    if(step) {
+        step = (step<step_value?step:step_value);
+        if(p_rudder->reach_value>p_rudder->current_value)
+            p_rudder->current_value+=step;
+        else
+            p_rudder->current_value-=step;
+    }
+    
+    p_rudder->send=1;
+    
+    {
+        tain_t step_dline;
+        tain_from_millisecs (&step_dline, p_rudder->tto);
+        tain_add_g(&p_rudder->dline, &step_dline);
+    }
+}
+
+static void build_can_frame(rudder_value_t* p_rudder, const uint8_t code, struct can_frame* p_tx) {
+    if(!p_rudder) return;
+    if(!p_tx) return;
+    
+    p_tx->can_id = address_from_pgn_g(p_rudder->pgn);
+    tx_canframe.can_dlc = 3;
+    tx_canframe.data[0] = code;
+    tx_canframe.data[1] = (p_rudder->current_value>>8)&0x0ff;
+    tx_canframe.data[2] = (p_rudder->current_value>>0)&0x0ff;    
+}
+
+static void send_values(const int fd, rudder_value_t* p_rudder) {
+    if(!p_rudder) return;
+    
+    if(!p_rudder->send) return;
+    
+    buffer_putsflush(buffer_2, "send\n") ;
+    build_can_frame(p_rudder, 0x01, &tx_canframe);
+    
+    int rtx=write(fd, &tx_canframe, sizeof(struct can_frame));
+    if (rtx > 0) p_rudder->send=0;
 }
 
 int main (int argc, char const *const *argv, char const *const *envp) {
@@ -87,16 +132,14 @@ int main (int argc, char const *const *argv, char const *const *envp) {
     PROG = "s6canbus-rudder" ;
     environ=(char**)envp;
     
-    tx_canframe.can_id = address_from_pgn_g(PGN1);
+    tx_canframe.can_id = address_from_pgn_g(S6CB_PGN_BUILD_ID(S6CB_PGN_RUDDER,0));
     tx_canframe.can_dlc = 3;
     tx_canframe.data[0] = 0x01;
     tx_canframe.data[1] = 0x00;
     tx_canframe.data[2] = 0x00;
     
-    tain_from_millisecs (&step_dline, 100) ;
     tain_now_g();
-    tain_add_g(&send_dline, &step_dline);
-
+    
     {
         subgetopt_t l = SUBGETOPT_ZERO ;
         for (;;) {
@@ -120,36 +163,67 @@ int main (int argc, char const *const *argv, char const *const *envp) {
     if (cfd<0) strerr_diefu2sys(111, "open CAN device: ", dev);
     x[0].fd=cfd;
     
+    for(int i=0; i<2; i++) {
+        update_value(&rudder_values[i]);
+    } 
+    
     while (cont) {
         int r ;
+        int global_send=0;
         
-        x[0].events = IOPAUSE_READ + (send_canframe?IOPAUSE_WRITE:0);
-        deadline = send_dline;
+        if(rudder_values[0].send) buffer_putsflush(buffer_2, "val 0 to send\n") ;
+        if(rudder_values[1].send) buffer_putsflush(buffer_2, "val 1 to send\n") ;
+        
+        deadline = tain_infinite_relative;
+        for(int i=0; i<2; i++) {
+            rudder_value_t* p_rudder = &rudder_values[i];
+            if(tain_less(&deadline, &p_rudder->dline))
+                deadline=p_rudder->dline;
+            
+            global_send|=rudder_values[i].send;
+        }
+        
+        x[0].events = IOPAUSE_READ + (global_send?IOPAUSE_WRITE:0);
 
+        buffer_putsflush(buffer_2, "iopause -------------------------------------------------\n") ;
         r = iopause_g(x, 1, &deadline) ;
         if (r < 0) strerr_diefu1sys(111, "iopause") ;
         else if (!r) {
-            tain_add_g(&send_dline, &step_dline);
-            send_canframe = 1;
-            
-            tx_canframe.data[1] = (current_value>>8)&0x0ff;
-            tx_canframe.data[2] = (current_value>>0)&0x0ff;
-            update_value();
+            buffer_putsflush(buffer_2, "tto\n") ;
+            for(int i=0; i<2; i++) {
+                update_value(&rudder_values[i]);
+            }            
         }
         else {
             if (x[0].revents & IOPAUSE_READ) {
+                buffer_putsflush(buffer_2, "read\n") ;
                 int rrx=read(x[0].fd, &rx_canframe, sizeof(struct can_frame));
                 if (rrx > 0) { 
-                    if(pgn_from_address(rx_canframe.can_id)==PGN1) {
-                        reach_value = (rx_canframe.data[1]<<8)+(rx_canframe.data[2]<<0);
+                    if(src_from_address(rx_canframe.can_id) != S6CB_DEVICE_CCS) {
+                    }
+                    else {
+                        for(int i=0; i<2; i++) {
+                            rudder_value_t* p_rudder = &rudder_values[i];
+                            if(pgn_from_address(rx_canframe.can_id)==p_rudder->pgn) {
+                                char nb_s[UINT16_FMT];
+                                
+                                int n=uint16_fmt(nb_s, i);
+                                buffer_puts(buffer_2, "new value to reach (") ;
+                                buffer_put(buffer_2, nb_s, n) ;
+                                buffer_puts(buffer_2, ")\n") ;
+                                buffer_flush(buffer_2) ;
+                                p_rudder->reach_value = (rx_canframe.data[1]<<8)+(rx_canframe.data[2]<<0);
+                            }
+                        }
                     }
                 }
             }
             else if (x[0].revents & IOPAUSE_WRITE) {
-                int rtx=write(x[0].fd, &tx_canframe, sizeof(struct can_frame));
-                if (rtx > 0) send_canframe=0;
+                buffer_putsflush(buffer_2, "write\n") ;
+                for(int i=0; i<2; i++) {
+                    send_values(x[0].fd, &rudder_values[i]);
+                }                 
             }
-
         }
     }
 
