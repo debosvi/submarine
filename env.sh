@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/env bash 
 
 export SUBMARINE_PROJECT_DIR=$PWD
 export SUBMARINE_BUILD_DIR=$SUBMARINE_PROJECT_DIR/builds
