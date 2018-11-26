@@ -12,9 +12,11 @@
 static int init_suite_success(void) { return 0; }
 static int clean_suite_success(void) { return 0; }
 
+#if S6CANBUS_CANDEV_FAKE
 static void test_valid_init(void) {
     CU_ASSERT_EQUAL(gensetdyn_n(&s6cb_candev_internal_data_g), 0);
 }
+#endif
 
 static void test_open(void) {
     int r;
@@ -24,6 +26,7 @@ static void test_open(void) {
     CU_ASSERT_EQUAL(r, 1);
 }
 
+#if S6CANBUS_CANDEV_FAKE
 static void test_idx(void) {
     unsigned i;
     
@@ -36,6 +39,7 @@ static void test_idx(void) {
     i=s6cb_candev_internal_idx_fd(2);
     CU_ASSERT_EQUAL(i, -1);    
 }
+#endif
 
 int main(void) {
     
@@ -53,9 +57,15 @@ int main(void) {
     }
     
     /* add the tests to the suite */
-    if( (NULL == CU_add_test(pSuite, "Test valid init", test_valid_init))||
-        (NULL == CU_add_test(pSuite, "Test s6cb_candev_open", test_open))  ||
-        (NULL == CU_add_test(pSuite, "Test s6cb_candev_idx", test_idx)) 
+    if(
+#if S6CANBUS_CANDEV_FAKE
+        (NULL == CU_add_test(pSuite, "Test valid init", test_valid_init)) ||
+#endif
+        (NULL == CU_add_test(pSuite, "Test s6cb_candev_open", test_open)) 
+#if S6CANBUS_CANDEV_FAKE
+        || (NULL == CU_add_test(pSuite, "Test s6cb_candev_idx", test_idx)) 
+#endif
+        
     ) {
         CU_cleanup_registry();
         return CU_get_error();

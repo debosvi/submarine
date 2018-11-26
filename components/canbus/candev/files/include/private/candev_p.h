@@ -3,6 +3,8 @@
 #ifndef __S6CANBUS_FILLBUF_PRIVATE_H__
 #define __S6CANBUS_FILLBUF_PRIVATE_H__
 
+#include <errno.h>
+
 #include <s6canbus/errors.h>
 #include <s6canbus/candev.h>
 

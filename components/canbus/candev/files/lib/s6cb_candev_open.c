@@ -16,7 +16,9 @@
 #include <linux/can.h>
 #include <linux/can/raw.h>
 
-int s6cb_candev_open(const char *dev) {
+int s6cb_candev_open(const char *pathname) {
+    if(!pathname) return (errno=EFAULT,-1);
+
     int s=socket(PF_CAN, SOCK_RAW, CAN_RAW);
 
     if (s != -1) {
@@ -24,7 +26,7 @@ int s6cb_candev_open(const char *dev) {
 
         struct sockaddr_can addr;
         struct ifreq ifr;
-        strcpy(ifr.ifr_name, dev );
+        strcpy(ifr.ifr_name, pathname );
 
         if(ioctl(s, SIOCGIFINDEX, &ifr)<0) {
             close(s);
@@ -54,8 +56,10 @@ int s6cb_candev_open(const char *dev) {
 #include <skalibs/bytestr.h>
 
 int s6cb_candev_open(const char *pathname) {
+    if(!pathname) return (errno=EFAULT,-1);
+    
     static int candev_fd=0;
-
+    
     uint32_t idx;
     size_t l=str_len(pathname);
     
@@ -65,7 +69,7 @@ int s6cb_candev_open(const char *pathname) {
         s6cb_candev_internal_t *p=(s6cb_candev_internal_t*)gensetdyn_p(&s6cb_candev_internal_data_g, idx);
         l= (l<S6CANBUS_CANDEV_PRIV_DEVNAME_SIZE?l:S6CANBUS_CANDEV_PRIV_DEVNAME_SIZE);
         p->fd=candev_fd;
-        byte_copy(p->dev, l, pathname);
+        byte_copy(p->pathname, l, pathname);
     }
     return candev_fd++;
 }

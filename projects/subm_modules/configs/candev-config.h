@@ -2,7 +2,7 @@
 #ifndef __CANDEV_CUSTOM_CONGFILE__ 
 #define __CANDEV_CUSTOM_CONGFILE__ 
 
-#define S6CANBUS_CANDEV_REGULAR     (0)
-#define S6CANBUS_CANDEV_FAKE        (1)
+#define S6CANBUS_CANDEV_REGULAR     (1)
+#define S6CANBUS_CANDEV_FAKE        (0)
 
 #endif // __CANDEV_CUSTOM_CONGFILE__

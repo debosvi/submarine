@@ -24,8 +24,8 @@ set(LOCAL_SRC_FILES
 
     s6cb_candev_open.c
     s6cb_candev_close.c
-#     s6cb_candev_read.c
-#     s6cb_candev_write.c
+    s6cb_candev_read.c
+    s6cb_candev_write.c
 )
 
 ## LOCAL_SRC_FILES_ADDED is the list of files to compile with absolute path (useful if generated files are somewhere).

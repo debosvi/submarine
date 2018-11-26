@@ -16,12 +16,14 @@
 #include <linux/can/raw.h>
 
 int s6cb_candev_close(const int fd) {
+    if(fd<0) return (errno=EBADF,-1);
     return close(fd);
 }
 
 #elif defined(S6CANBUS_CANDEV_FAKE)
 
 int s6cb_candev_close(const int fd) {
+    if(fd<0) return (errno=EBADF,-1);
     return 1;
 }
 

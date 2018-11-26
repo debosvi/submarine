@@ -6,6 +6,6 @@ add_executable(${COMP_NAME}
 )
 
 target_link_libraries(${COMP_NAME}
-    s6cb_candev
+    lib_s6cb_candev_shared
 )
 

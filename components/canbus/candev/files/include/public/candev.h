@@ -11,10 +11,12 @@
     #define S6CANBUS_CANDEV_FAKE        (0)
 #endif
 
+#define S6CANBUS_DATA_MINSIZE (8)
+
 int s6cb_candev_open(const char *pathname);
 int s6cb_candev_close(const int fd);
-ssize_t s6cb_candev_read(int fd, void *buf, size_t count);
-ssize_t s6cb_candev_write(int fd, const void *buf, size_t count);
+ssize_t s6cb_candev_read(const int fd, void* const buf, uint32_t* const id);
+ssize_t s6cb_candev_write(const int fd, const uint32_t id, const void* const buf, const size_t count);
 
 #if defined(USE_CANDEV_CONFIG_FILE)
 #include "candev-config.h"
@@ -24,7 +26,7 @@ ssize_t s6cb_candev_write(int fd, const void *buf, size_t count);
 #endif
 
 #if S6CANBUS_CANDEV_REGULAR & S6CANBUS_CANDEV_FAKE
-#error "Custom CANDEV config file must define only one amog S6CANBUS_CANDEV_REGULAR and S6CANBUS_CANDEV_FAKE"
+#error "Custom CANDEV config file must define only one among S6CANBUS_CANDEV_REGULAR and S6CANBUS_CANDEV_FAKE"
 #endif
 
 #endif // defined USE_CANDEV_CONFIG_FILE
