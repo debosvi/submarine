@@ -1,0 +1,7 @@
+
+#include "private/binn_p.h"
+
+///////////////////////////////////////////////////////////////////////////////
+binn_t binn_object(void) {
+    return binn_new(BINN_TYPE_OBJECT, 0, 0);
+}

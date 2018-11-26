@@ -1,0 +1,14 @@
+
+#include "private/binn_p.h"
+
+/*************************************************************************************/
+int binn_to_@FUNCTION_NAME@(const binn_t item, @ARG_TYPE@ *pvalue) {
+    int _ret=1;
+    binn_internal_t* p=0;
+           
+    p = binn_get_internal(item);
+    if(p && (p->type==@BINN_TYPE@))
+		_ret=binn_get_value(&p->data, pvalue, @BINN_TYPE@);
+	
+	return _ret;
+}
