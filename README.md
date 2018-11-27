@@ -15,3 +15,9 @@ zlib1g-dev libglib2.0-dev libpixman-1-dev
 bridge-utils
 openvpn
 
+-- VCAN module
+
+sudo modprobe vcan
+sudo ip link add dev vcan0 type vcan
+sudo ip link set up vcan0
+

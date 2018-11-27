@@ -69,7 +69,7 @@ int s6cb_candev_open(const char *pathname) {
         s6cb_candev_internal_t *p=(s6cb_candev_internal_t*)gensetdyn_p(&s6cb_candev_internal_data_g, idx);
         l= (l<S6CANBUS_CANDEV_PRIV_DEVNAME_SIZE?l:S6CANBUS_CANDEV_PRIV_DEVNAME_SIZE);
         p->fd=candev_fd;
-        byte_copy(p->pathname, l, pathname);
+        byte_copy(p->dev, l, pathname);
     }
     return candev_fd++;
 }

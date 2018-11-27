@@ -1,6 +1,7 @@
 /* ISC license. */
 
 #define __USE_MISC
+#define _DEFAULT_SOURCE
 
 #include <unistd.h>
 #include <errno.h>

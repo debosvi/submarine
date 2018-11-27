@@ -54,8 +54,6 @@ static struct can_frame tx_canframe;
 
 // event loop stuffs 
 static int cont = 1 ;
-static tain_t deadline ;
-
 
 // others
 
@@ -69,8 +67,8 @@ typedef struct {
 } rudder_value_t;
 
 static rudder_value_t rudder_values[2] = {
-    { .pgn=S6CB_PGN_BUILD_ID(S6CB_PGN_RUDDER,0), .reach_value=0x200, .current_value=0x200, .send=0, .tto=100, .dline=TAIN_ZERO },
-    { .pgn=S6CB_PGN_BUILD_ID(S6CB_PGN_RUDDER,1), .reach_value=0x200, .current_value=0x200, .send=0, .tto=250, .dline=TAIN_ZERO }
+    { .pgn=S6CB_PGN_BUILD_ID(S6CB_PGN_RUDDER,0), .reach_value=0x200, .current_value=0x200, .send=0, .tto=1000, .dline=TAIN_ZERO },
+    { .pgn=S6CB_PGN_BUILD_ID(S6CB_PGN_RUDDER,1), .reach_value=0x200, .current_value=0x200, .send=0, .tto=2500, .dline=TAIN_ZERO }
 };
 static uint16_t step_value = 50;
 
@@ -122,6 +120,12 @@ static void send_values(const int fd, rudder_value_t* p_rudder) {
     if (rtx > 0) p_rudder->send=0;
 }
 
+static void update_all() {
+    for(int i=0; i<2; i++) {
+        update_value(&rudder_values[i]);
+    } 
+}
+
 int main (int argc, char const *const *argv, char const *const *envp) {
     unsigned int verbosity = 1;
     unsigned int closestdin = 1;
@@ -163,9 +167,7 @@ int main (int argc, char const *const *argv, char const *const *envp) {
     if (cfd<0) strerr_diefu2sys(111, "open CAN device: ", dev);
     x[0].fd=cfd;
     
-    for(int i=0; i<2; i++) {
-        update_value(&rudder_values[i]);
-    } 
+    update_all();
     
     while (cont) {
         int r ;
@@ -174,11 +176,13 @@ int main (int argc, char const *const *argv, char const *const *envp) {
         if(rudder_values[0].send) buffer_putsflush(buffer_2, "val 0 to send\n") ;
         if(rudder_values[1].send) buffer_putsflush(buffer_2, "val 1 to send\n") ;
         
-        deadline = tain_infinite_relative;
+        tain_t deadline = TAIN_INFINITE;
         for(int i=0; i<2; i++) {
             rudder_value_t* p_rudder = &rudder_values[i];
-            if(tain_less(&deadline, &p_rudder->dline))
+            if(tain_less(&p_rudder->dline, &deadline)) {
+//                 buffer_putsflush(buffer_2, "less deadline\n") ;
                 deadline=p_rudder->dline;
+            }
             
             global_send|=rudder_values[i].send;
         }
@@ -190,9 +194,7 @@ int main (int argc, char const *const *argv, char const *const *envp) {
         if (r < 0) strerr_diefu1sys(111, "iopause") ;
         else if (!r) {
             buffer_putsflush(buffer_2, "tto\n") ;
-            for(int i=0; i<2; i++) {
-                update_value(&rudder_values[i]);
-            }            
+            update_all();
         }
         else {
             if (x[0].revents & IOPAUSE_READ) {
