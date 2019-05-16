@@ -1,0 +1,7 @@
+ 
+source "$BR2_EXTERNAL_SUBMARINE_PATH/package/test1/Config.in"
+source "$BR2_EXTERNAL_SUBMARINE_PATH/package/test2/Config.in"
+
+config SUBMARINE_FLASH_ADDR
+  hex "my-board flash address"
+  default 0x10AD

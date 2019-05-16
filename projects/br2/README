@@ -1,0 +1,9 @@
+CPIO
+qemu-system-i386 -accel kvm -kernel output/images/bzImage  -initrd output/images/rootfs.cpio -object can-bus,id=canbus0       -object can-host-socketcan,id=canhost0,if=can0,canbus=canbus0       -device kvaser_pci,canbus=canbus0   -net nic,model=virtio -net user
+
+EXT2
+qemu-system-i386 -accel kvm -kernel output/images/bzImage  -drive file=output/images/rootfs.ext2,if=virtio,format=raw -append "root=/dev/vda"   -object can-bus,id=canbus0       -object can-host-socketcan,id=canhost0,if=can0,canbus=canbus0       -device kvaser_pci,canbus=canbus0   -net nic,model=virtio -net user
+
+SQUASHFS
+qemu-system-i386 -accel kvm -kernel output/images/bzImage  -drive file=output/images/rootfs.squashfs,media=disk,format=raw -append "root=/dev/sda" -object can-bus,id=canbus0       -object can-host-socketcan,id=canhost0,if=can0,canbus=canbus0       -device kvaser_pci,canbus=canbus0   -net nic,model=virtio -net user
+
