@@ -1,5 +1,0 @@
- 
-config BR2_PACKAGE_TEST_1
-  bool "test-1"
-  help
-    Some help about test-1

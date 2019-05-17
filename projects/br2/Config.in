@@ -1,5 +1,5 @@
  
-source "$BR2_EXTERNAL_SUBMARINE_PATH/package/test1/Config.in"
+source "$BR2_EXTERNAL_SUBMARINE_PATH/package/libcanard/Config.in"
 source "$BR2_EXTERNAL_SUBMARINE_PATH/package/test2/Config.in"
 
 config SUBMARINE_FLASH_ADDR
