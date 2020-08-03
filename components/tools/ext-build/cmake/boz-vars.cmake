@@ -54,12 +54,14 @@ if(${MINGW})
     set(CMAKE_EXECUTABLE_SUFFIX ".exe")
 endif()
 
-add_definitions(-std=c99)
 add_definitions(-Wall  -Wextra)
 add_definitions(-D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700)
 
 SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS)
 SET(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS)
+
+set(CMAKE_C_FLAGS "-std=c99")
+set(CMAKE_CXX_FLAGS "-std=c++17")
 
 set(CMAKE_C_FLAGS_DEBUG "-O0 -ggdb")
 set(CMAKE_C_FLAGS_RELEASE "-O2 -Werror")
