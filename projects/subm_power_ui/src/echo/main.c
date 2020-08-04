@@ -6,9 +6,14 @@
 #include <skalibs/strerr2.h>
 #include <skalibs/selfpipe.h>
 #include <skalibs/iopause.h>
+#include <skalibs/sgetopt.h>
 
 static int cont=1;
 static uint16_t counter=0;
+static int verbosity = 0;
+
+#define USAGE "echo [ -v ]"
+#define dieusage() strerr_dieusage(100, USAGE)
 
 static void handle_signals (void)
 {
@@ -24,10 +29,24 @@ static void handle_signals (void)
   }
 }
 
-int main(int ac, char **av) {
+int main(int ac, char const *const *av) {
 	iopause_fd x[2] = { { -1, IOPAUSE_READ, 0 }, { -1, 0, 0 } } ;
 	tain_t deadline;
 	PROG = "echo" ;
+	
+	{
+		subgetopt_t l = SUBGETOPT_ZERO ;
+		for (;;) {
+			int opt = subgetopt_r(ac, av, "v", &l) ;
+			if (opt == -1) break ;
+			switch (opt) {
+				case 'v' : verbosity = 1; break ;
+				default : dieusage() ;
+			}
+		}
+		ac -= l.ind ; av += l.ind ;
+	}
+  
 	
 	x[0].fd = selfpipe_init();
 	x[1].fd = buffer_fd(buffer_1);
@@ -44,7 +63,8 @@ int main(int ac, char **av) {
 			strerr_die3x(1, PROG, ": fatal: ", "iopause");
 		}
 		else if (!r) {
-			strerr_warn1x("timeout");
+			if(verbosity) 
+				strerr_warn1x("timeout");
 
 			// restart timeout
 			tain_addsec_g(&deadline, 1);
@@ -64,7 +84,9 @@ int main(int ac, char **av) {
 			}
 			if (x[0].revents & IOPAUSE_READ) handle_signals() ;
 			if (x[1].revents & IOPAUSE_WRITE) {
-				strerr_warn1x("write");
+				if(verbosity) 
+					strerr_warn1x("write");
+				
 				// flush buffer_1
 				buffer_putflush(buffer_1, "\n", 1) ;
 			}
