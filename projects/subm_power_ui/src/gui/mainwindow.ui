@@ -38,7 +38,6 @@
     <property name="title">
      <string>Tools</string>
     </property>
-    <addaction name="actionConfigure"/>
     <addaction name="actionClear"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -61,7 +60,6 @@
    </attribute>
    <addaction name="actionConnect"/>
    <addaction name="actionDisconnect"/>
-   <addaction name="actionConfigure"/>
    <addaction name="actionClear"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -90,7 +88,7 @@
     <string>C&amp;onnect</string>
    </property>
    <property name="toolTip">
-    <string>Connect to serial port</string>
+    <string>Connect to Echo Application</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -105,25 +103,10 @@
     <string>&amp;Disconnect</string>
    </property>
    <property name="toolTip">
-    <string>Disconnect from serial port</string>
+    <string>Disconnect from Echo Application</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
-   </property>
-  </action>
-  <action name="actionConfigure">
-   <property name="icon">
-    <iconset resource="terminal.qrc">
-     <normaloff>:/images/settings.png</normaloff>:/images/settings.png</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;Configure</string>
-   </property>
-   <property name="toolTip">
-    <string>Configure serial port</string>
-   </property>
-   <property name="shortcut">
-    <string>Alt+C</string>
    </property>
   </action>
   <action name="actionClear">

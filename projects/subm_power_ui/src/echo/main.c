@@ -5,6 +5,7 @@
 #include <skalibs/buffer.h>
 #include <skalibs/strerr2.h>
 #include <skalibs/selfpipe.h>
+#include <skalibs/sig.h>
 #include <skalibs/iopause.h>
 #include <skalibs/sgetopt.h>
 
@@ -12,7 +13,7 @@ static int cont=1;
 static uint16_t counter=0;
 static int verbosity = 0;
 
-#define USAGE "echo [ -v ]"
+#define USAGE "echo_terminal [ -v ]"
 #define dieusage() strerr_dieusage(100, USAGE)
 
 static void handle_signals (void)
@@ -23,7 +24,7 @@ static void handle_signals (void)
     {
       case -1 : strerr_die3x(1, PROG, ": fatal: ", "selfpipe_read");
       case 0 : return ;
-      case SIGABRT : cont = 0 ; break ;
+      case SIGTERM : cont = 0 ; break ;
       default: strerr_warnw1x("unmanaged signal caught");
     }
   }
@@ -32,7 +33,7 @@ static void handle_signals (void)
 int main(int ac, char const *const *av) {
 	iopause_fd x[2] = { { -1, IOPAUSE_READ, 0 }, { -1, 0, 0 } } ;
 	tain_t deadline;
-	PROG = "echo" ;
+	PROG = "echo_terminal" ;
 	
 	{
 		subgetopt_t l = SUBGETOPT_ZERO ;
@@ -47,15 +48,28 @@ int main(int ac, char const *const *av) {
 		ac -= l.ind ; av += l.ind ;
 	}
   
+  
 	
 	x[0].fd = selfpipe_init();
 	x[1].fd = buffer_fd(buffer_1);
 	
+	if (sig_ignore(SIGPIPE) < 0) 
+		strerr_diefu1sys(111, "ignore SIGPIPE") ;
+	
+	{
+		sigset_t set ;
+		sigemptyset(&set) ;
+		sigaddset(&set, SIGTERM) ;
+		sigaddset(&set, SIGHUP) ;
+		if (selfpipe_trapset(&set) < 0) 
+			strerr_diefu1sys(111, "trap signals") ;
+	}
+
 	// init stamps
 	tain_now_g();
 	tain_addsec_g(&deadline, 1);
 	
-	while(1) {
+	while(cont) {
 		x[1].events = (buffer_iswritable(buffer_1)?IOPAUSE_WRITE:0);
 		
 		int r = iopause_g(x, 2, &deadline) ;
@@ -94,6 +108,6 @@ int main(int ac, char const *const *av) {
 	}
 	
 	selfpipe_finish() ;
-	
+	buffer_putsflush(buffer_1, "exiting\n") ;
 	return 0;
 }

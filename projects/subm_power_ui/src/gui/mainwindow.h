@@ -53,7 +53,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QSerialPort>
+#include <QProcess>
 
 QT_BEGIN_NAMESPACE
 
@@ -66,7 +66,6 @@ class MainWindow;
 QT_END_NAMESPACE
 
 class Console;
-class SettingsDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -77,13 +76,13 @@ public:
     ~MainWindow();
 
 private slots:
-    void openSerialPort();
-    void closeSerialPort();
+	void startEchoApp();
+    void stopEchoApp();
+    void startError(QProcess::ProcessError error);
+    void stateChangedEchoApp(QProcess::ProcessState newState);
     void about();
-    void writeData(const QByteArray &data);
-    void readData();
-
-    void handleError(QSerialPort::SerialPortError error);
+	void writeData(const QByteArray &data);    
+	void readData();    
 
 private:
     void initActionsConnections();
@@ -94,8 +93,7 @@ private:
     Ui::MainWindow *m_ui = nullptr;
     QLabel *m_status = nullptr;
     Console *m_console = nullptr;
-    SettingsDialog *m_settings = nullptr;
-    QSerialPort *m_serial = nullptr;
+	QProcess *m_eproc = nullptr;
 };
 
 #endif // MAINWINDOW_H

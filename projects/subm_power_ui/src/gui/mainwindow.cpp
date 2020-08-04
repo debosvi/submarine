@@ -52,7 +52,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "console.h"
-#include "settingsdialog.h"
 
 #include <QLabel>
 #include <QMessageBox>
@@ -63,80 +62,80 @@ MainWindow::MainWindow(QWidget *parent) :
     m_ui(new Ui::MainWindow),
     m_status(new QLabel),
     m_console(new Console),
-    m_settings(new SettingsDialog),
-//! [1]
-    m_serial(new QSerialPort(this))
-//! [1]
+    m_eproc(new QProcess)
 {
 //! [0]
     m_ui->setupUi(this);
     m_console->setEnabled(false);
+	m_console->setLocalEchoEnabled(true);
+
     setCentralWidget(m_console);
 
     m_ui->actionConnect->setEnabled(true);
     m_ui->actionDisconnect->setEnabled(false);
     m_ui->actionQuit->setEnabled(true);
-    m_ui->actionConfigure->setEnabled(true);
 
     m_ui->statusBar->addWidget(m_status);
 
     initActionsConnections();
-
-    connect(m_serial, &QSerialPort::errorOccurred, this, &MainWindow::handleError);
-
-//! [2]
-    connect(m_serial, &QSerialPort::readyRead, this, &MainWindow::readData);
-//! [2]
+	
     connect(m_console, &Console::getData, this, &MainWindow::writeData);
+	connect(m_eproc, &QProcess::readyReadStandardOutput, this, &MainWindow::readData);
+	connect(m_eproc, SIGNAL(errorOccurred(QProcess::ProcessError)), this, SLOT(startError(QProcess::ProcessError)));
+	connect(m_eproc, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(stateChangedEchoApp(QProcess::ProcessState)));
+	
 //! [3]
 }
 //! [3]
 
 MainWindow::~MainWindow()
 {
-    delete m_settings;
     delete m_ui;
 }
 
-//! [4]
-void MainWindow::openSerialPort()
-{
-    const SettingsDialog::Settings p = m_settings->settings();
-    m_serial->setPortName(p.name);
-    m_serial->setBaudRate(p.baudRate);
-    m_serial->setDataBits(p.dataBits);
-    m_serial->setParity(p.parity);
-    m_serial->setStopBits(p.stopBits);
-    m_serial->setFlowControl(p.flowControl);
-    if (m_serial->open(QIODevice::ReadWrite)) {
-        m_console->setEnabled(true);
-        m_console->setLocalEchoEnabled(p.localEchoEnabled);
-        m_ui->actionConnect->setEnabled(false);
-        m_ui->actionDisconnect->setEnabled(true);
-        m_ui->actionConfigure->setEnabled(false);
-        showStatusMessage(tr("Connected to %1 : %2, %3, %4, %5, %6")
-                          .arg(p.name).arg(p.stringBaudRate).arg(p.stringDataBits)
-                          .arg(p.stringParity).arg(p.stringStopBits).arg(p.stringFlowControl));
-    } else {
-        QMessageBox::critical(this, tr("Error"), m_serial->errorString());
-
-        showStatusMessage(tr("Open error"));
-    }
+void MainWindow::startEchoApp() {
+	QString program = ".built/bin/echo_terminal";
+    QStringList arguments;
+    arguments << "-v";
+	
+	if(!m_eproc) {
+		showStatusMessage(tr("Connect error"));
+		return;
+	}
+	
+	m_eproc->start(program, arguments);
 }
-//! [4]
 
-//! [5]
-void MainWindow::closeSerialPort()
-{
-    if (m_serial->isOpen())
-        m_serial->close();
-    m_console->setEnabled(false);
-    m_ui->actionConnect->setEnabled(true);
-    m_ui->actionDisconnect->setEnabled(false);
-    m_ui->actionConfigure->setEnabled(true);
-    showStatusMessage(tr("Disconnected"));
+void MainWindow::stopEchoApp() {
+	if(!m_eproc) {
+		showStatusMessage(tr("Disconnect error"));
+		return;
+	}
+	
+	m_eproc->terminate();
 }
-//! [5]
+void MainWindow::startError(QProcess::ProcessError error) {
+	QString msg = QString("Echo start error, code %1").arg(error);
+	showStatusMessage(tr(msg.toStdString().c_str()));
+}
+    
+void MainWindow::stateChangedEchoApp(QProcess::ProcessState newState) {
+	switch(newState) {
+		case QProcess::Running:
+			m_ui->actionConnect->setEnabled(false);
+			m_ui->actionDisconnect->setEnabled(true);    
+			m_console->setEnabled(true);
+			m_console->putData("started\n");			
+			break;
+		case QProcess::NotRunning:
+			m_ui->actionConnect->setEnabled(true);
+			m_ui->actionDisconnect->setEnabled(false);  
+			m_console->setEnabled(false);
+			m_console->putData("stopped\n");			
+			break;
+		default: break;
+	}
+}
 
 void MainWindow::about()
 {
@@ -146,37 +145,27 @@ void MainWindow::about()
                           "using Qt, with a menu bar, toolbars, and a status bar."));
 }
 
+
 //! [6]
 void MainWindow::writeData(const QByteArray &data)
 {
-    m_serial->write(data);
+    m_eproc->write(data);
 }
 //! [6]
 
 //! [7]
 void MainWindow::readData()
 {
-    const QByteArray data = m_serial->readAll();
+    const QByteArray data = m_eproc->readAllStandardOutput();
     m_console->putData(data);
 }
 //! [7]
 
-//! [8]
-void MainWindow::handleError(QSerialPort::SerialPortError error)
-{
-    if (error == QSerialPort::ResourceError) {
-        QMessageBox::critical(this, tr("Critical Error"), m_serial->errorString());
-        closeSerialPort();
-    }
-}
-//! [8]
-
 void MainWindow::initActionsConnections()
 {
-    connect(m_ui->actionConnect, &QAction::triggered, this, &MainWindow::openSerialPort);
-    connect(m_ui->actionDisconnect, &QAction::triggered, this, &MainWindow::closeSerialPort);
-    connect(m_ui->actionQuit, &QAction::triggered, this, &MainWindow::close);
-    connect(m_ui->actionConfigure, &QAction::triggered, m_settings, &SettingsDialog::show);
+    connect(m_ui->actionConnect, &QAction::triggered, this, &MainWindow::startEchoApp);
+	connect(m_ui->actionDisconnect, &QAction::triggered, this, &MainWindow::stopEchoApp);
+	connect(m_ui->actionQuit, &QAction::triggered, this, &MainWindow::close);
     connect(m_ui->actionClear, &QAction::triggered, m_console, &Console::clear);
     connect(m_ui->actionAbout, &QAction::triggered, this, &MainWindow::about);
     connect(m_ui->actionAboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
